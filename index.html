@@ -288,6 +288,10 @@ input.az-ok{border-color:var(--success,#16a34a)!important}input.az-ko{border-col
 .az-sotto{margin-top:16px}
 #cardAzienda input:disabled,#cardLegale input:disabled{opacity:.7}
 @media (max-width:900px){.az3{grid-template-columns:1fr 1fr}}
+/* azienda: le schede affiancate arrivano alla stessa altezza (Sante 27/10) */
+.g2.az-pari,.az-sotto{align-items:stretch}
+.g2.az-pari>.col{display:flex;flex-direction:column;gap:16px}.g2.az-pari>.col>.pc:last-child{flex:1}
+.az-sotto>.pc{display:flex;flex-direction:column}
 </style><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"><meta name="robots" content="noindex,nofollow">
 </head>
 <body>
@@ -1070,7 +1074,7 @@ function doSubmit(){
   cLr.b.addEventListener('input',controlla);pAz.addEventListener('input',copiaRef);
   function tipo(v){TIPO=v;var az=v==='azienda';$$('button',sgT).forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
    if(fnL)fnL.textContent=az?'Ragione sociale *':'Nome e cognome cliente';if(fn)fn.placeholder=az?'Es. SOLARIS IMPIANTI S.R.L.':'Es. ROSSI MARIO';
-   pAz.hidden=!az;cAz.c.hidden=!az;cLr.c.hidden=!az;if(opA)opA.hidden=!az;
+   g.classList.toggle('az-pari',az);   pAz.hidden=!az;cAz.c.hidden=!az;cLr.c.hidden=!az;if(opA)opA.hidden=!az;
    /* privato: a destra Contratto e Sopralluogo come oggi; azienda: a destra i dati dell'azienda, Contratto e Sopralluogo scendono sotto */
    if(az){sposta(sotto,cC.c,cS.c);sotto.hidden=false;}else{sposta(Rr,cC.c,cS.c);sotto.hidden=true;}
    var det=form.querySelector('input[name="tipo_agevolazione"][value="detrazione"]');
