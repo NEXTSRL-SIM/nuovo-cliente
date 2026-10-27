@@ -229,6 +229,53 @@ body>.container>.card{background:transparent!important;border:0!important;paddin
 @media (prefers-reduced-motion:reduce){.ft,.sw,.sw::after,.sw-in,.sw-in::after{transition:none!important}}
 
 .tab-btn{display:inline-flex!important}
+
+/* «Cosa vuoi fare per questo cliente?» e Reinvia, come nel Nuovo preventivo */
+#practiceBox{border:0!important;background:transparent!important;padding:0!important;margin:16px 0 4px!important}
+#practiceBox .section-title{font-size:10px!important;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)!important;font-weight:800!important;margin:0 0 10px!important;border:0!important;padding:0!important}
+.scelte{display:grid!important;grid-template-columns:1fr 1fr;gap:10px!important;margin:0!important}
+.scelte .opt{display:flex!important;align-items:flex-start;gap:11px!important;border:1.5px solid var(--border)!important;border-radius:12px!important;padding:12px 13px!important;background:var(--surface)!important;color:var(--text)!important;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s;margin:0!important}
+.scelte .opt:hover{border-color:var(--accent)!important}
+.scelte .opt input{position:absolute;opacity:0;pointer-events:none}
+.scelte .opt .si{width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;background:var(--sf2);color:var(--text-muted);flex:none;transition:all .15s}
+.scelte .opt b{display:block;font-size:13px;font-weight:700}.scelte .opt small{display:block;font-size:11.5px;color:var(--text-muted);font-weight:500;margin-top:2px;line-height:1.4}
+.scelte .opt .ck{margin-left:auto;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex:none;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+.scelte .opt:has(input:checked){border-color:var(--accent)!important;background:var(--acw)!important;box-shadow:0 0 0 3px var(--acw)}
+.scelte .opt:has(input:checked) .si{background:var(--accent);color:#fff}
+.scelte .opt:has(input:checked) .ck{background:var(--accent);border-color:var(--accent)}
+.scelte .opt:has(input:checked) .ck::after{content:'✓'}
+.prev-riga{display:flex;gap:12px;align-items:flex-end;margin-top:12px;flex-wrap:wrap}
+.prev-riga>#practiceSelectWrap{flex:1 1 260px;margin:0!important}
+.prev-riga>#practiceSelectWrap label{margin-top:0!important}
+.prev-riga>#reinviaBox{margin:0 0 0 auto!important;text-align:right}
+#reinviaBox .muted{display:none}
+.btn-reinvia{display:inline-flex!important;align-items:center;gap:8px;border-radius:10px!important;background:var(--accent)!important;border:1px solid var(--accent)!important;color:#fff!important;font-weight:700!important;font-size:13px!important;padding:10px 16px!important;box-shadow:0 2px 8px rgba(8,145,178,.28);cursor:pointer}
+:root[data-tema="scuro"] .btn-reinvia{color:#0B1A1A!important}
+.btn-reinvia:hover{filter:brightness(1.08);box-shadow:0 3px 12px rgba(8,145,178,.4)}
+.btn-reinvia svg{width:16px;height:16px}
+#reinviaStatus:empty{display:none}
+@media (max-width:700px){.scelte{grid-template-columns:1fr}}
+
+/* provvigione */
+#provvIframe{display:none!important}
+#provvMsg{color:var(--text-muted)!important}
+.pg{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)!important;align-items:stretch!important}
+.pg>.pc{display:flex;flex-direction:column}.pg>.pc>.pb{flex:1}
+.sl{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.sl::after{content:'';flex:1;height:1px;background:var(--border)}
+.k3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.k2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kb{border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;background:var(--surface);min-width:0;margin:0!important}
+.kb>span,label.kb{font-size:11px!important;color:var(--text-muted)!important;font-weight:600!important}
+.kb b{font:700 17px 'JetBrains Mono',monospace;color:var(--text);font-variant-numeric:tabular-nums}
+.kb small{font:500 10.5px 'JetBrains Mono',monospace;color:var(--text-muted)}
+.kb input{margin:4px 0 0!important;font-family:'JetBrains Mono',monospace}
+.ptot{margin-top:12px;padding:14px 16px;border-radius:12px;background:var(--viw2);display:flex;align-items:center;justify-content:space-between}
+.ptot span{font-weight:700;color:var(--vi2)}.ptot b{font:700 18px 'JetBrains Mono',monospace;color:var(--vi2)}
+.pdiff{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);padding:6px 2px 0}.pdiff b{font-family:'JetBrains Mono',monospace}
+.pdich textarea{width:100%;min-height:80px;resize:vertical}
+.pdisc{display:none;gap:10px;align-items:center;padding:10px 14px;border-radius:10px;background:var(--amw2);color:var(--am2);font-size:12px;margin-bottom:16px}
+.pdisc span{color:var(--text-dim)}
+@media (max-width:900px){.pg,.k3,.k2{grid-template-columns:1fr!important}}
 </style><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"><meta name="robots" content="noindex,nofollow">
 </head>
 <body>
@@ -954,6 +1001,18 @@ function doSubmit(){
   var li=$('#labelImport'),cb=$('#cb_import_prev');
   if(li&&cb){cb.classList.add('sw-in');li.className='swl';li.innerHTML='';li.appendChild(cb);li.appendChild(document.createTextNode('Importa da preventivo'));cA.x.appendChild(li);}
   kids.forEach(function(n){if(n.tagName!=='FIELDSET'&&n!==li)cA.b.appendChild(n);});
+  /* «Cosa vuoi fare per questo cliente?» a due schede, e Reinvia accanto alla scelta della pratica */
+  I.nuova='<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 12v6M9 15h6"/>';
+  I.gear='<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>';
+  I.send='<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>';
+  var pb=$('#practiceBox',cA.b);if(pb){var po=$('.options',pb);if(po){po.classList.add('scelte');
+   var D={new_practice:['nuova','Nuova opportunità','Una pratica nuova per questo cliente'],edit_practice:['gear','Modifica pratica esistente','Riapri una pratica già caricata e correggila']};
+   $$('label.opt',po).forEach(function(l){var r=$('input',l);var d=D[r&&r.value];if(!d)return;var sp=$('span',l);if(sp)sp.remove();
+    l.insertAdjacentHTML('beforeend','<span class="si">'+ico(d[0],16)+'</span><span><b>'+d[1]+'</b><small>'+d[2]+'</small></span><span class="ck"></span>');});}
+   var sw2=$('#practiceSelectWrap',cA.b),rb2=$('#reinviaBox',cA.b);
+   if(sw2&&rb2){var rr=el('div','prev-riga');sw2.parentNode.insertBefore(rr,sw2);rr.appendChild(sw2);rr.appendChild(rb2);
+    var lb=$('label',sw2);if(lb)lb.textContent='Seleziona la pratica';
+    var bt=$('#btnReinvia',cA.b);if(bt){bt.innerHTML=ico('send',16)+'<span>Reinvia mail al cliente</span>';bt.title='Rimanda la mail di richiesta documentazione con i dati salvati nella pratica';}}}
   var cC=card('doc','vi','Contratto e pratica','Canale, tipologia, proprietà e agevolazione');
   fsCh.forEach(function(fs){var r=daFieldset(fs);if(r)cC.b.appendChild(r);});
   ['#fs-ownership','#fs-agevolazione'].forEach(function(id){var fs=$(id);if(!fs)return;var r=daFieldset(fs);if(r){cC.b.appendChild(r);r.id=id.slice(1)+'-riga';}});
@@ -1107,6 +1166,52 @@ function doSubmit(){
    var p=String(d.imp_percorso||'').toLowerCase();
    var it=p==='ampliamento'||p==='rifacimento'||p==='accumulo'?p:(!kwp&&(kwh>0||ib)?'accumulo':(/smontaggio/.test(nl)?'rifacimento':(/meter/.test(nl)?'ampliamento':'nuovo')));
    intervento(it,false);};
+
+  /* ---------- 3 · provvigione, come la tavola ----------
+     I dati e il salvataggio restano quelli di n8n: si legge la pagina provvigioni-form e si salva su salva-provvigione.
+     «Decisione Next» resta spenta finché la pratica non ha i campi per approvazione, motivo e accettazione dell'agente. */
+  I.eur='<path d="M18 7a7 7 0 1 0 0 10M4 10h10M4 14h10"/>';I.ag='<circle cx="9" cy="8" r="4"/><path d="M3 21a6 6 0 0 1 12 0M19 8v6M16 11h6"/>';
+  var T3=$('#tabProvvigioni'),ifr=$('#provvIframe'),pm=$('#provvMsg');
+  var PV=el('div','');PV.id='provvNuova';if(T3)T3.appendChild(PV);
+  var WHP='https://n8n.srv1030489.hstgr.cloud/webhook/salva-provvigione',PD=null;
+  function eur(n){if(n==null||isNaN(n))return '—';var q=Number(n).toFixed(2).split('.');return '€ '+q[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.')+','+q[1];}
+  function box(t,v,c,sub){return '<div class="kb"><span>'+t+'</span><b'+(c?' style="color:'+c+'"':'')+'>'+v+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div>';}
+  function leggiProvv(url){PV.innerHTML='<div class="pc"><div class="pb" style="padding:20px 18px;color:var(--text-muted)">Carico la provvigione…</div></div>';
+   fetch(url).then(function(r){return r.text();}).then(function(h){
+    var d=new DOMParser().parseFromString(h,'text/html'),sc=(d.querySelector('script')||{}).textContent||'';
+    function vv(n){var m=sc.match(new RegExp('var '+n+'=([^;,\\n]+)'));if(!m)m=sc.match(new RegExp('[,;]'+n+'=([^;,\\n]+)'));return m?m[1].replace(/^"|"$/g,''):null;}
+    var F={};$$('.fl',d).forEach(function(f){var l=$('label',f),v=$('.v',f),sm=$('small',f);if(l&&v){var k=l.textContent.trim();if(!F[k])F[k]={v:v.textContent.replace(/euro/i,'€').trim(),s:sm?sm.textContent.replace(/euro/gi,'€').trim():''};}});
+    var hd=$('.w>div',d),stato=(hd&&$('span',hd))?$('span',hd).textContent.trim():'';
+    PD={pid:vv('_pid'),aid:+vv('_aid'),an:vv('_an'),t:+vv('_t'),lf:+vv('_lf'),lh:+vv('_lh'),pb:+vv('_pb'),pp:+vv('_pp'),xb:+vv('_xb'),xp:+vv('_xp'),
+     b:+(($('#ib',d)||{}).value||0),p:+(($('#ip',d)||{}).value||0),nota:(($('#in',d)||{}).textContent||''),F:F,stato:stato,sub:hd?($$('div div',hd)[1]||{}).textContent:''};
+    disegnaProvv();}).catch(function(e){PV.innerHTML='<div class="pc"><div class="pb" style="padding:20px 18px;color:#DC2626">Provvigione non caricata: '+fEsc(e.message||e)+'</div></div>';});}
+  function disegnaProvv(){var d=PD,F=d.F,g=function(k){return F[k]?F[k].v:'—';};
+   PV.innerHTML='<div class="pdisc" id="pDisc"><b>Discrepanza</b><span id="pDiscT"></span></div>'
+   +'<div class="g2 pg"><section class="pc"><div class="ph"><span class="pi">'+ico('eur')+'</span><div><b>Provvigione venditore</b><small>Calcolato dal sistema: contratto, listino e condizioni dell\'agente. Non si modifica.</small></div></div><div class="pb">'
+   +'<div class="sl">Riepilogo contratto</div><div class="k3">'+box('Totale contratto (IVA incl.)',g('Totale contratto (IVA incl.)'))+box('Listino FV',g('Listino FV'))+box('Listino termico',g('Listino Termico'))+'</div>'
+   +'<div class="sl">Plusvalenza</div><div class="k3">'+box('Listino totale',g('Listino totale'))+box('Plusvalenza lorda',g('Plusvalenza lorda'))+box('Plusvalenza imponibile',g('Plusvalenza imponibile'),'var(--accent)')+'</div>'
+   +'<div class="sl">Calcolo di sistema</div><div class="fh" style="margin-bottom:8px">Agente <b>'+fEsc(d.an||'')+'</b> · base <b>'+d.pb+'%</b> · plus <b>'+d.pp+'%</b></div>'
+   +'<div class="k3">'+box('Provvigione base',eur(d.xb),'',F['Provvigione base']?F['Provvigione base'].s:'')+box('Quota plusvalenza',eur(d.xp))+box('Totale proposto',eur(d.xb+d.xp),'var(--accent)')+'</div></div></section>'
+   +'<section class="pc pdich"><div class="ph"><span class="pi vi">'+ico('ag')+'</span><div><b>Dichiarazione agente</b><small>Quello che ha dichiarato '+fEsc(d.an||'l\'agente')+'</small></div><span class="px"><span class="chipx">'+fEsc(d.stato||'bozza')+'</span></span></div><div class="pb">'
+   +'<div class="sl">Dichiarato</div><div class="k2"><label class="kb">Provvigione base (€)<input type="number" id="pB" step="0.01" min="0" value="'+d.b.toFixed(2)+'"></label><label class="kb">Quota plusvalenza (€)<input type="number" id="pP" step="0.01" min="0" value="'+d.p.toFixed(2)+'"></label></div>'
+   +'<div class="ptot"><span>Totale dichiarato</span><b id="pTot"></b></div><div class="pdiff"><span>Differenza dal calcolo</span><b id="pDiff"></b></div>'
+   +'<div class="sl">Nota dell\'agente</div><textarea id="pNota" rows="3" placeholder="Facoltativa">'+fEsc(d.nota)+'</textarea></div>'
+   +'<div class="pf"><span id="pMsg" class="fh"></span><button type="button" class="btn btn-secondary" id="pBozza" style="margin-left:auto">Salva bozza</button><button type="button" class="btn btn-primary" id="pConf">Conferma provvigione</button></div></section></div>'
+   +'<section class="pc spenta" style="margin-top:16px"><div class="ph"><span class="pi">'+ico('eur')+'</span><div><b>Decisione Next</b><small>Accetto la dichiarazione o la correggo, con il motivo; poi l\'agente accetta.</small></div><span class="px"><span class="chipx grigio">in arrivo</span></span></div><div class="pb"><p class="fh" style="margin:12px 0 0">Si accende quando la pratica avrà i campi per la cifra approvata, il motivo e l\'accettazione dell\'agente, e gli agenti avranno il loro accesso.</p></div></section>';
+   function ricalc(){var b=parseFloat($('#pB',PV).value)||0,p=parseFloat($('#pP',PV).value)||0,df=b+p-(d.xb+d.xp);
+    $('#pTot',PV).textContent=eur(b+p);$('#pDiff',PV).textContent=(df>=0?'+ ':'− ')+eur(Math.abs(df));$('#pDiff',PV).style.color=Math.abs(df)>0.5?'var(--am2)':'var(--text-muted)';
+    $('#pDisc',PV).style.display=df>0.5?'flex':'none';$('#pDiscT',PV).textContent='L\'agente dichiara '+eur(df)+' in più del calcolo di sistema.';}
+   ['pB','pP'].forEach(function(i){$('#'+i,PV).addEventListener('input',ricalc);});ricalc();
+   function salvaP(stato){var b=parseFloat($('#pB',PV).value)||0,p=parseFloat($('#pP',PV).value)||0;
+    var pay={pratica_id:d.pid,agente_id:d.aid,agente_nome:d.an,totale_contratto_eur:d.t,listino_fv_eur:d.lf,listino_heat_eur:d.lh,percentuale_base:d.pb,percentuale_plusvalenza:d.pp,prov_base_dichiarata:b,prov_plus_dichiarata:p,note_agente:$('#pNota',PV).value||null,stato:stato};
+    $('#pMsg',PV).textContent='Salvo…';
+    fetch(WHP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pay)}).then(function(r){return r.json();}).then(function(res){
+     $('#pMsg',PV).textContent='';avvisa(res.alert_discrepanza?'attenzione':'ok',stato==='confermata'?'Provvigione confermata':'Salvata in bozza',res.alert_discrepanza?'La dichiarazione supera il calcolo di sistema: la discrepanza è segnalata a Sante.':'Salvata.');
+     d.stato=stato==='confermata'?'Confermata':'Bozza';var ch=$('.pdich .chipx',PV);if(ch)ch.textContent=d.stato;})
+    .catch(function(e){$('#pMsg',PV).textContent='';avvisa('errore','Provvigione non salvata',fEsc(e.message||e));});}
+   $('#pBozza',PV).onclick=function(){salvaP('bozza');};
+   $('#pConf',PV).onclick=async function(){if(await chiedi('Conferma provvigione','Confermo la provvigione dichiarata di <b>'+$('#pTot',PV).textContent+'</b>?','Conferma'))salvaP('confermata');};}
+  if(ifr){var ultimo='';new MutationObserver(function(){var u=ifr.getAttribute('src')||'';if(u===ultimo)return;ultimo=u;if(!u){PV.innerHTML='';if(pm)pm.style.display='';return;}if(pm)pm.style.display='none';leggiProvv(u);}).observe(ifr,{attributes:true,attributeFilter:['src']});}
   window.__fvCarica('vuoto',{});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',via);else via();
