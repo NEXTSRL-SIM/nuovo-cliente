@@ -1040,6 +1040,9 @@ function doSubmit(){
    var sw2=$('#practiceSelectWrap',cA.b),rb2=$('#reinviaBox',cA.b);
    if(sw2&&rb2){var rr=el('div','prev-riga');sw2.parentNode.insertBefore(rr,sw2);rr.appendChild(sw2);rr.appendChild(rb2);
     var lb=$('label',sw2);if(lb)lb.textContent='Seleziona la pratica';
+    /* Reinvia compare solo dopo aver scelto la pratica da modificare, come prima */
+    var ps=$('#practiceSelect',cA.b),guarda=function(){var vuoto=!ps||!ps.value;if(vuoto&&rb2.style.display!=='none')rb2.style.display='none';else if(!vuoto&&rb2.style.display==='none'&&sw2.style.display!=='none')rb2.style.display='block';};
+    new MutationObserver(guarda).observe(rb2,{attributes:true,attributeFilter:['style']});new MutationObserver(guarda).observe(sw2,{attributes:true,attributeFilter:['style']});if(ps)ps.addEventListener('change',function(){setTimeout(guarda,0);});guarda();
     var bt=$('#btnReinvia',cA.b);if(bt){bt.innerHTML=ico('send',16)+'<span>Reinvia mail al cliente</span>';bt.title='Rimanda la mail di richiesta documentazione con i dati salvati nella pratica';}}}
   var cC=card('doc','vi','Contratto e pratica','Canale, tipologia, proprietà e agevolazione');
   fsCh.forEach(function(fs){var r=daFieldset(fs);if(r)cC.b.appendChild(r);});
