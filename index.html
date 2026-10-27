@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <title>Nuova richiesta cliente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f8f7fb;--surface:#fff;--border:#e8e5f0;--text:#1e1b2e;--text-dim:#6b5f99;
+      --text-muted:#9b8fc7;--text-hint:#b0a8cc;--accent:#7c3aed;--accent-light:rgba(124,58,237,0.04);
+      --accent-bg:rgba(124,58,237,0.06);--input-bg:#faf9fd;--success:#16a34a;--error:#dc2626;
+      --warning-bg:#fffbeb;--warning-border:#fbbf24;--warning-text:#92400e;
+      --urgent-bg:#fff1f2;--urgent-border:#fda4af;--urgent-text:#e11d48;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);padding:28px 32px;min-height:100vh}
+    .container{max-width:760px;margin:0 auto}
+    .card{background:var(--surface);border-radius:10px;border:1px solid var(--border);padding:28px 32px}
+    h1{font-size:20px;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+    .subtitle{font-size:13px;color:var(--text-muted);margin:0 0 20px}
+    label{display:block;font-size:12px;font-weight:500;color:var(--text-dim);margin:14px 0 5px}
+    input[type="text"],input[type="email"],input[type="tel"],input[type="number"],select,textarea{
+      width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);font-size:13px;
+      font-family:'DM Sans',sans-serif;color:var(--text);background:var(--input-bg);outline:none;transition:border .2s
+    }
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b0a8cc' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+    input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+    textarea{resize:vertical;min-height:60px}
+    .row{display:flex;gap:12px}
+    .row>div{flex:1}
+    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;background:var(--accent-bg);color:var(--accent);font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+    .pill span{font-weight:600;margin-left:4px}
+    .mode-badge{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}
+    .mode-badge.new{background:rgba(22,163,74,0.08);color:var(--success)}
+    .mode-badge.edit{background:rgba(217,119,6,0.08);color:#d97706}
+    .section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin:20px 0 10px}
+    fieldset{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:16px 0}
+    legend{padding:0 8px;font-size:11px;font-weight:500;color:var(--text-dim)}
+    .options{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+    .opt{display:flex;align-items:center;gap:6px;font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);cursor:pointer;transition:all .15s;color:var(--text)}
+    .opt:hover{border-color:#c4b5fd;color:var(--accent)}
+    .opt input[type="radio"],.opt input[type="checkbox"]{accent-color:var(--accent);margin:0}
+    .muted{font-size:11px;color:var(--text-hint);margin-top:4px}
+    .tabs{display:flex;gap:0;margin:16px 0 20px;border-bottom:1px solid var(--border)}
+    .tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;font-size:13px;font-weight:500;
+      color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all .15s}
+    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .tab-btn:hover{color:var(--accent)}
+    #practiceBox{border:1px solid var(--warning-border);border-radius:10px;padding:14px 16px;margin:16px 0;background:var(--warning-bg);display:none}
+    #practiceBox .section-title{color:var(--warning-text);font-size:13px;font-weight:600;margin-bottom:8px}
+    #reinviaBox{display:none;margin:16px 0}
+    .btn-reinvia{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:8px;border:1px solid var(--warning-border);background:var(--warning-bg);color:var(--warning-text);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+    .btn-reinvia:hover{background:#fef3c7}
+
+    /* IMPORT BOX */
+    .import-toggle{display:flex;align-items:center;gap:8px;font-size:13px;padding:8px 14px;border-radius:8px;
+      border:1.5px solid var(--border);background:var(--accent-bg);cursor:pointer;color:var(--accent);
+      font-weight:500;transition:all .15s;margin-bottom:14px;width:fit-content}
+    .import-toggle:hover{border-color:var(--accent);background:rgba(124,58,237,.10)}
+    .import-toggle input{accent-color:var(--accent);margin:0}
+    #importBox{border:1.5px solid var(--accent);border-radius:10px;padding:16px;margin-bottom:16px;
+      background:rgba(124,58,237,0.04);display:none}
+    #importBox .import-title{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:10px}
+    #importStatus{font-size:12px;color:var(--accent);margin-top:6px;font-style:italic}
+
+    .product-section{border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;background:var(--input-bg)}
+    .product-section .section-title{font-size:14px;font-weight:600;color:var(--text);margin:0 0 12px}
+    .product-row{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:12px;color:var(--text)}
+    .product-row input[type="checkbox"]{accent-color:var(--accent);margin:0;flex-shrink:0}
+    .product-row span.label{flex:1}
+    .product-row select,.product-row input[type="number"],.product-row input[type="text"]{max-width:140px;padding:7px 10px;font-size:12px}
+    .product-row textarea{flex:1;width:100%;padding:7px 10px;font-size:12px;min-height:48px}
+    .totale-row{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:var(--text)}
+    .totale-row input[type="number"]{max-width:160px}
+    #retrofitBox{margin:8px 0 4px 24px;padding:10px 14px;border-radius:8px;border:1px solid #c4b5fd;background:rgba(124,58,237,0.04);display:none}
+    #retrofitBox label{margin:0 0 4px;font-size:11px;color:var(--text-dim)}
+    #retrofitBox select{font-size:12px;padding:7px 10px}
+    #sopralluogoBox{border:1px solid var(--urgent-border);border-radius:10px;padding:16px 18px;margin-top:20px;background:var(--urgent-bg)}
+    #sopralluogoBox .sop-title{font-size:13px;font-weight:700;color:var(--urgent-text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+    #sopralluogoBox .sop-desc{font-size:12px;color:#9f1239;margin-top:6px;line-height:1.5}
+    .opt-urgent{border-color:var(--urgent-border)!important;background:var(--urgent-bg)!important}
+    .opt-urgent:hover{border-color:var(--urgent-text)!important;color:var(--urgent-text)!important}
+    .actions{display:flex;justify-content:space-between;gap:10px;margin-top:24px}
+    .btn{padding:10px 24px;border-radius:8px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .15s}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:hover{background:#6d28d9;box-shadow:0 4px 12px rgba(124,58,237,0.25)}
+    .btn-secondary{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+    .btn-secondary:hover{background:var(--input-bg)}
+    #status{margin-top:10px;font-size:12px}
+    #status.error{color:var(--error)}
+    #status.success{color:var(--success)}
+    input[readonly]{background:#f0edf5;color:var(--text-muted)}
+  </style>
+<style id="portale">
+/* PORTALE NEXT-110: grafica del portale sopra la pagina di prima */
+:root{--bg:#F2F4F7;--surface:#fff;--border:#E2E7EE;--text:#111827;--text-dim:#3F4A5A;--text-muted:#6B7686;--text-hint:#94A3B8;--accent:#0891B2;--accent-bg:rgba(8,145,178,.07);--input-bg:#fff;--teal:#0891B2;--teal-bg:rgba(8,145,178,.07);--teal-border:#BFE6EF;--sf:#fff;--sf2:#F8FAFC;--ln:#E2E7EE;--ink:#111827;--ink2:#3F4A5A;--ink3:#6B7686;--ac:#0891B2;--acw:#ECFEFF;--gr:#15803D;--grw:#DCFCE7;--am:#B45309;--amw:#FEF3C7}
+:root[data-tema="scuro"]{--bg:#0F141B;--surface:#161D27;--border:#263243;--text:#E6EBF2;--text-dim:#CBD5E1;--text-muted:#94A3B8;--text-hint:#64748B;--accent:#22D3EE;--accent-bg:rgba(34,211,238,.08);--input-bg:#0F1620;--teal:#22D3EE;--teal-bg:rgba(34,211,238,.08);--teal-border:#1E4A57;--sf:#161D27;--sf2:#131A23;--ln:#263243;--ink:#E6EBF2;--ink2:#CBD5E1;--ink3:#94A3B8;--acw:rgba(34,211,238,.1);--grw:rgba(52,211,153,.12);--amw:rgba(245,158,11,.15)}
+body{font-family:Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;padding:22px 24px 40px!important}
+button,input,select,textarea,.btn,.tab-btn,.btn-genera,.btn-reinvia,.altro-desc{font-family:inherit!important}
+.container{max-width:1080px!important;margin:0!important}
+.card{border-radius:14px!important;border-color:var(--border)!important;padding:22px 26px!important;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+h1{font-size:22px!important;font-weight:800!important;letter-spacing:-.02em}
+.page-icon{background:var(--acw)!important;border-color:transparent!important}.page-icon svg{stroke:var(--accent)!important}
+.pill{background:var(--sf)!important;border:1px solid var(--border);color:var(--text-muted)!important;border-radius:999px!important}
+.tabs{counter-reset:passo;border:1px solid var(--border)!important;border-radius:14px;padding:4px;gap:4px;background:var(--surface);margin:16px 0 22px!important;flex-wrap:wrap}
+.tab-btn{flex:0 1 auto!important;display:inline-flex;align-items:center;gap:8px;border:0!important;margin:0!important;border-radius:10px;padding:8px 14px!important;font-weight:600!important;color:var(--text-muted)!important;font-size:12.5px!important}
+.tab-btn::before{counter-increment:passo;content:counter(passo);width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex:none}
+.tab-btn.active{background:var(--accent)!important;color:#fff!important}
+:root[data-tema="scuro"] .tab-btn.active{color:#0B1A1A!important}
+.tab-btn:hover:not(.active){background:var(--accent-bg)}
+label{color:var(--text-dim)!important;font-weight:600!important}
+input[type="text"],input[type="email"],input[type="tel"],input[type="number"],select,textarea{border-radius:8px!important;border-color:var(--border)!important;background-color:var(--input-bg)!important;color:var(--text)!important}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px var(--accent-bg)!important}
+input[readonly]{background:var(--sf2)!important}
+fieldset{border-radius:12px!important}
+.opt{border-radius:999px!important}.opt:hover,.opt-cliente:hover{border-color:var(--accent)!important}
+.opt-cliente{border-radius:999px!important}
+.product-section{background:var(--surface)!important;border-color:var(--teal-border)!important;border-radius:12px!important}
+#generaBox{background:var(--surface)!important;border:1.5px solid var(--accent)!important;box-shadow:0 0 0 3px var(--accent-bg)!important;border-radius:14px!important}
+.btn{border-radius:999px!important;font-weight:700!important}
+.btn-primary:hover{background:#0E7490!important;box-shadow:0 4px 12px rgba(8,145,178,.25)!important}
+.btn-genera{border-radius:999px!important;font-weight:700!important}
+.btn-genera.ridotto{background:var(--accent-bg)!important}
+.btn-genera.solo{background:var(--surface)!important}
+.sub-box{border-color:var(--teal-border)!important;background:var(--accent-bg)!important}
+.card-percorso{border-radius:12px!important}
+#status.loading{border-color:var(--teal-border)!important}
+.tab-content input[type="text"],.tab-content select{min-height:36px}
+
+/* PORTALE NEXT-110: finestre a video del portale al posto degli avvisi del browser */
+.velo{position:fixed;inset:0;background:rgba(15,20,27,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:90}
+.fin{background:var(--sf,#fff);color:var(--ink,#111827);border:1px solid var(--ln,#E6E8EE);border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(16,24,40,.25);overflow:hidden;font-family:inherit}
+.fin .fh{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 8px}
+.fin .fh .fi{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:16px;font-weight:800}
+.fin .fh b{display:block;font-size:15px;font-weight:800}
+.fin .fm{padding:4px 20px 16px 66px;font-size:13.5px;line-height:1.55;color:var(--ink2,#3F4A5A)}
+.fin .fp{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--ln,#E6E8EE);background:var(--sf2,#F8FAFC)}
+.fin .fb{border:1px solid var(--ln,#E6E8EE);background:var(--sf,#fff);color:var(--ink2,#3F4A5A);border-radius:999px;padding:8px 16px;font:700 12.5px inherit;font-family:inherit;cursor:pointer}
+.fin .fb.si{background:var(--ac,#0891B2);border-color:var(--ac,#0891B2);color:#fff}
+.fin .fb.rosso{background:#DC2626;border-color:#DC2626;color:#fff}
+.fin .gira{width:16px;height:16px;border:2px solid var(--acw,#ECFEFF);border-top-color:var(--ac,#0891B2);border-radius:50%;animation:fgira .8s linear infinite;display:inline-block;vertical-align:-3px;margin-right:8px}
+@keyframes fgira{to{transform:rotate(360deg)}}
+
+/* PORTALE NEXT-110: impaginazione del Nuovo cliente come la tavola approvata */
+:root{--acw:#E0F4F9;--amw2:#FEF3C7;--am2:#B45309;--rdw2:#FEE2E2;--rd2:#B91C1C;--blw2:#E8EFFE;--bl2:#1D4ED8;--viw2:#F0ECFE;--vi2:#6D4AE0;--grw2:#DCFCE7;--gr2:#15803D}
+:root[data-tema="scuro"]{--acw:rgba(34,211,238,.14);--amw2:rgba(242,178,76,.14);--am2:#F2B24C;--rdw2:rgba(248,113,113,.14);--rd2:#F87171;--blw2:rgba(125,180,255,.14);--bl2:#7DB4FF;--viw2:rgba(167,139,250,.14);--vi2:#A78BFA;--grw2:rgba(52,211,153,.14);--gr2:#34D399}
+body>.container>.card{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+.container{max-width:1240px!important}
+.subtitle{color:var(--text-muted)!important;font-size:12.5px!important;margin-top:3px!important}
+.mode-badge{vertical-align:4px}
+.g2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 1px 2px rgba(16,24,40,.05);min-width:0}
+.pc>.ph{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--border)}
+.pi{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:var(--acw);color:var(--accent);flex:none}
+.pi.am{background:var(--amw2);color:var(--am2)}.pi.rd{background:var(--rdw2);color:var(--rd2)}.pi.bl{background:var(--blw2);color:var(--bl2)}.pi.vi{background:var(--viw2);color:var(--vi2)}
+.pc>.ph b{font-size:13.5px;font-weight:700;display:block;color:var(--text)}.pc>.ph small{font-size:11.5px;color:var(--text-muted);display:block;font-weight:500}
+.pc>.ph .px{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pc>.pb{padding:4px 18px 16px}
+.pc>.pb>label:first-child{margin-top:12px}
+.pc>.pf{padding:12px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--sf2);border-radius:0 0 14px 14px}
+.pc.spenta{opacity:.6}
+.chipx{font-size:11px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--acw);color:var(--accent);white-space:nowrap}
+.chipx.grigio{background:var(--sf2);color:var(--text-muted);border:1px solid var(--border)}
+.fr{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--border)}
+.fr:last-child{border-bottom:0}.fr>span:first-child{font-size:12.5px;font-weight:700;color:var(--text-dim)}
+.seg{display:inline-flex!important;flex-wrap:wrap;max-width:100%;gap:0!important;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--sf2);width:fit-content;margin:0!important;padding:0!important;flex-direction:row!important}
+.seg .opt{white-space:nowrap;border:0!important;border-right:1px solid var(--border)!important;border-radius:0!important;background:transparent!important;padding:7px 11px!important;font-weight:600!important;font-size:12.5px!important;color:var(--text-muted)!important;margin:0!important;line-height:1.3;width:auto!important}
+.seg .opt:last-child{border-right:0!important}
+.seg .opt input{position:absolute;opacity:0;pointer-events:none;width:0;height:0}
+.seg .opt:has(input:checked){background:var(--acw)!important;color:var(--accent)!important;box-shadow:inset 0 -2px 0 var(--accent)}
+.sg{display:inline-flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--sf2);flex-wrap:wrap}
+.sg button{border:0;border-right:1px solid var(--border);background:transparent;padding:7px 12px;font:600 12.5px Manrope,sans-serif;color:var(--text-muted);cursor:pointer}
+.sg button:last-child{border-right:0}.sg button.on{background:var(--acw);color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)}
+.sw-in{appearance:none!important;-webkit-appearance:none!important;width:30px!important;height:17px!important;min-width:30px;border-radius:999px!important;background:var(--border)!important;border:0!important;position:relative;cursor:pointer;margin:0!important;padding:0!important;flex:none;transition:background .15s}
+.sw-in::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.sw-in:checked{background:var(--accent)!important}.sw-in:checked::after{left:15px}
+.swl{display:inline-flex!important;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text-dim);cursor:pointer;margin:0!important;border:0!important;background:transparent!important;padding:0!important}
+.sw{margin-left:auto;width:32px;height:18px;border-radius:999px;border:0;background:var(--border);position:relative;cursor:pointer;flex:none;padding:0;transition:background .15s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sw[aria-checked="true"]{background:var(--accent)}.sw[aria-checked="true"]::after{left:16px}
+.sw:focus-visible,.sg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.comp{display:flex!important;align-items:center;gap:10px;padding:9px 0!important;border-bottom:1px dashed var(--border);margin:0!important;background:transparent!important;border-radius:0!important}
+.comp .label{font-size:12.5px!important;font-weight:600;color:var(--text-dim);flex:1}
+.comp select,.comp input[type=number]{max-width:140px}
+.comp textarea{flex-basis:100%}
+.pc .totale-row{margin:0!important;padding:0!important;border:0!important;background:transparent!important;display:flex;align-items:center;gap:10px;width:100%}
+.pc .totale-row span{font-weight:700;font-size:12.5px}.pc .totale-row input{margin-left:auto;text-align:right;font-family:'JetBrains Mono',monospace;max-width:170px}
+/* fotovoltaico */
+.fvg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.ft{background:var(--sf2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-width:0;transition:opacity .15s}
+.ft.s2{grid-column:span 2}.ft.s3{grid-column:span 3}
+.ft.off{opacity:.55}.ft.dis{opacity:.35;pointer-events:none}
+.ftl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:flex;align-items:center;gap:7px;min-height:20px}
+.ftl svg{color:var(--accent);flex:none}
+.frow{display:flex;gap:6px;align-items:center;min-width:0}
+.frow select{flex:1;min-width:0;width:100%;margin:0!important}
+.frow input[type=number]{width:72px!important;margin:0!important;font-family:'JetBrains Mono',monospace}
+.fx{font-size:11px;color:var(--text-muted)}
+.fbig{font:700 20px 'JetBrains Mono',monospace;color:var(--text)}
+.fv{font-size:12.5px;font-weight:600;color:var(--text-muted)}.fv.si{color:var(--text)}
+.fh{font-size:11px;color:var(--text-muted)}
+.arr{font-size:10px;font-weight:700;color:var(--am2);background:var(--amw2);border-radius:999px;padding:1px 7px;text-transform:none;letter-spacing:0}
+.fvlab{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin:16px 0 8px}
+.fvnote{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fvnote .hdn{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;font-weight:700;color:var(--text)}
+.tg{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--sf2);color:var(--text-muted);border:1px solid var(--border)}
+.tg.m{background:var(--acw);color:var(--accent);border-color:transparent}
+.nbox{height:110px;box-sizing:border-box;overflow:auto;border:1px dashed var(--border);border-radius:10px;padding:10px 12px;background:var(--sf2);font-size:12.5px;line-height:1.55;color:var(--text-dim)}
+.nbox:empty::before{content:'Nessuna nota: si compilano da sole con moduli e caselle.';color:var(--text-muted);font-style:italic}
+.fvnote textarea{width:100%;height:110px!important;min-height:110px!important;box-sizing:border-box;resize:none!important;display:block;font-size:12.5px!important;line-height:1.55;padding:10px 12px!important;margin:0!important}
+#retrofitBox{margin:0!important;padding:0!important;border:0!important;background:transparent!important}
+#retrofitBox label{margin:0 0 4px!important;font-size:11px!important}
+.pills{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.pill2{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--sf2);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--text-dim)}
+.pill2 i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.pills a{font-size:12px;color:var(--accent);font-weight:700;text-decoration:none;cursor:pointer}
+/* barra in fondo */
+.barra-fondo{position:sticky;bottom:10px;z-index:30;margin-top:18px!important;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 24px rgba(16,24,40,.08);padding:10px 12px 10px 18px!important;display:flex;align-items:center;gap:10px;justify-content:flex-start!important}
+.barra-fondo #btnReset{border:0!important;background:transparent!important;color:var(--text-dim)!important;padding:8px 10px!important}
+.barra-fondo .sp{flex:1}
+.barra-fondo .avanti{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+#status{margin:0!important}
+#status:empty{display:none}
+#sopralluogoBox{border:0!important;background:transparent!important;padding:0!important;margin:0!important}
+#sopralluogoBox .sop-title{display:none}
+@media (max-width:900px){.g2,.fvnote{grid-template-columns:1fr}.fvg{grid-template-columns:1fr 1fr}.ft.s3,.ft.s2{grid-column:1/-1}.fr{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.ft,.sw,.sw::after,.sw-in,.sw-in::after{transition:none!important}}
+
+.tab-btn{display:inline-flex!important}
+</style><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"><meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="pill">Data caricamento:<span id="todayLabel"></span></div>
+      <h1>Gestione richiesta cliente <span id="modeBadge" class="mode-badge new">NUOVA</span></h1>
+      <p class="subtitle">Compila i dati del cliente e invia la richiesta documenti in automatico.</p>
+
+      <div class="tabs">
+        <button type="button" class="tab-btn active" data-tab="cliente">Dati cliente</button>
+        <button type="button" class="tab-btn" data-tab="prodotti">Prodotti venduti</button>
+        <button type="button" class="tab-btn" data-tab="provvigioni" id="tabBtnProvv">Provvigione</button>         </div>
+
+      <form id="leadForm" onsubmit="return false">
+        <input type="hidden" name="lead_id" id="lead_id" />
+        <input type="hidden" name="submitted_at" id="submitted_at" />
+        <input type="hidden" name="existing_client_id" id="existing_client_id" />
+        <input type="hidden" name="existing_practice_id" id="existing_practice_id" />
+        <input type="hidden" name="mode" id="mode" value="new" />
+        <input type="hidden" name="note" id="note_auto" value="" />
+
+        <!-- TAB 1: DATI CLIENTE -->
+        <div id="tabCliente">
+
+          <!-- ===== IMPORTA DA PREVENTIVO ===== -->
+          <label class="import-toggle" id="labelImport">
+            <input type="checkbox" id="cb_import_prev" onchange="toggleImport(this.checked)" />
+            &#128196; Importa da preventivo
+          </label>
+
+          <div id="importBox">
+            <div class="import-title">Seleziona il preventivo da importare</div>
+            <select id="import_prev_select" onchange="onImportSelect(this.value)">
+              <option value="">— Caricamento preventivi... —</option>
+            </select>
+            <div id="importStatus"></div>
+          </div>
+          <!-- ===== FINE IMPORTA ===== -->
+
+          <label for="existing_client">Cliente</label>
+          <select id="existing_client">
+            <option value="">&#10133; Nuovo cliente</option>
+          </select>
+          <p class="muted">Seleziona un cliente esistente oppure lascia "Nuovo cliente" per crearne uno.</p>
+
+          <div id="practiceBox">
+            <div class="section-title">Cosa vuoi fare per questo cliente?</div>
+            <div class="options">
+              <label class="opt"><input type="radio" name="practice_mode" value="new_practice" checked /><span>Nuova opportunit&agrave;</span></label>
+              <label class="opt"><input type="radio" name="practice_mode" value="edit_practice" /><span>Modifica pratica esistente</span></label>
+            </div>
+            <div id="practiceSelectWrap" style="display:none;margin-top:8px;">
+              <label for="practiceSelect">Seleziona pratica da modificare</label>
+              <select id="practiceSelect"><option value="">— Seleziona preventivo —</option></select>
+            </div>
+          </div>
+
+          <div id="reinviaBox">
+            <button type="button" id="btnReinvia" class="btn-reinvia">&#128260; Reinvia mail al cliente (dati aggiornati)</button>
+            <p class="muted" style="margin-top:4px;">Invia la mail di richiesta documentazione usando i dati attualmente salvati nel database.</p>
+            <div id="reinviaStatus" style="margin-top:6px;font-size:12px;"></div>
+          </div>
+
+          <label for="full_name">Nome e cognome cliente</label>
+          <input id="full_name" name="full_name" type="text" required placeholder="Es. ROSSI MARIO" />
+
+          <div class="row">
+            <div>
+              <label for="email">Email cliente</label>
+              <input id="email" name="email" type="email" required placeholder="esempio@dominio.it" />
+            </div>
+            <div>
+              <label for="phone">Telefono</label>
+              <input id="phone" name="phone" type="tel" required placeholder="Es. 333 1234567" />
+            </div>
+          </div>
+
+          <label for="vendor">Venditore</label>
+          <select id="vendor" name="vendor" required>
+            <option value="">Caricamento venditori...</option>
+          </select>
+          <p class="muted">Comparir&agrave; nel testo della mail: "come accordi con il nostro referente commerciale ...".</p>
+
+          <fieldset>
+            <legend>Canale invio contratto</legend>
+            <div class="options">
+              <label class="opt"><input type="radio" name="channel" value="email" checked /><span>Email normale</span></label>
+              <label class="opt"><input type="radio" name="channel" value="pec" /><span>PEC del cliente</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Tipologia di impianto</legend>
+            <div class="options">
+              <label class="opt"><input type="radio" name="product_type" value="fotovoltaico" checked /><span>Solo fotovoltaico</span></label>
+              <label class="opt"><input type="radio" name="product_type" value="termico" /><span>Solo termico</span></label>
+              <label class="opt"><input type="radio" name="product_type" value="entrambi" /><span>Fotovoltaico + termico</span></label>
+            </div>
+          </fieldset>
+        </div>
+
+       <fieldset id="fs-ownership">
+          <legend>Tipo di propriet&agrave; immobile</legend>
+          <div class="options">
+            <label class="opt"><input type="radio" name="ownership_type" value="proprietario" /><span>Proprietario</span></label>
+            <label class="opt"><input type="radio" name="ownership_type" value="affittuario" /><span>Affittuario</span></label>
+            <label class="opt"><input type="radio" name="ownership_type" value="usufruttuario" /><span>Usufruttuario</span></label>
+            <label class="opt"><input type="radio" name="ownership_type" value="" checked /><span>Non specificato</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="fs-agevolazione">
+          <legend>Agevolazione fiscale</legend>
+          <div class="options">
+            <label class="opt"><input type="radio" name="tipo_agevolazione" value="detrazione" /><span>Detrazione fiscale 50%</span></label>
+            <label class="opt"><input type="radio" name="tipo_agevolazione" value="conto_termico" /><span>Conto Termico 3.0</span></label>
+            <label class="opt"><input type="radio" name="tipo_agevolazione" value="nessuna" checked /><span>Nessuna agevolazione</span></label>
+          </div>
+        </fieldset>
+
+        <!-- TAB 2: PRODOTTI VENDUTI -->
+        <div id="tabProdotti" style="display:none;">
+          <div class="product-section">
+            <div class="section-title">Divisione riscaldamento / climatizzazione</div>
+            <div class="product-row"><input type="checkbox" name="heat_pigma50_enabled" value="1" /><span class="label">Pigma Advance+ Aria Next M Hybrid 50 link R32</span><select name="heat_pigma50_taglia"><option value="">Taglia...</option><option value="25">25</option><option value="30">30</option><option value="35">35</option></select></div>
+            <div class="product-row"><input type="checkbox" name="heat_pigma80_enabled" value="1" /><span class="label">Pigma Advance+ Aria Next M Hybrid 80 link R32</span><select name="heat_pigma80_taglia"><option value="">Taglia...</option><option value="25">25</option><option value="30">30</option><option value="35">35</option></select></div>
+            <div class="product-row"><input type="checkbox" name="heat_valvole_enabled" value="1" /><span class="label">Valvole termostatiche</span><input type="number" name="heat_valvole_num" min="0" placeholder="N." /></div>
+            <div class="product-row"><input type="checkbox" name="clima_alys25" value="1" /><span class="label">Climatizzatore Ariston - Alys 25</span></div>
+            <div class="product-row"><input type="checkbox" name="clima_alys35" value="1" /><span class="label">Climatizzatore Ariston - Alys 35</span></div>
+            <div class="product-row"><input type="checkbox" name="clima_alys50" value="1" /><span class="label">Climatizzatore Ariston - Alys 50</span></div>
+            <div class="product-row"><input type="checkbox" name="clima_prios70" value="1" /><span class="label">Climatizzatore Ariston - Prios 70</span></div>
+            <div class="product-row"><input type="checkbox" name="clima_dual50" value="1" /><span class="label">Climatizzatore Ariston - Dual 50 / Alys 32</span></div>
+            <div class="product-row"><input type="checkbox" name="heat_kit_wifi" value="1" /><span class="label">Kit WiFi Ariston</span></div>
+            <div class="product-row"><input type="checkbox" name="heat_altro_enabled" value="1" /><span class="label">Altro (descrizione)</span><textarea name="heat_altro_desc" rows="2" placeholder="Descrizione altro"></textarea></div>
+            <div class="totale-row"><span>Totale sezione riscaldamento/clima (&euro;)</span><input type="number" step="0.01" min="0" name="heat_totale_eur" /></div>
+          </div>
+
+          <div class="product-section">
+            <div class="section-title">Divisione impianti fotovoltaici</div>
+            <div class="product-row"><input type="checkbox" name="fv_imp_q470" value="1" /><span class="label">Impianto FV con moduli Q470</span></div>
+            <div class="product-row"><input type="checkbox" name="fv_imp_q410" value="1" /><span class="label">Impianto FV con moduli Q410 Wp</span></div>
+            <div class="product-row"><input type="checkbox" name="fv_batteria" value="1" /><span class="label">Batteria di accumulo</span></div>
+            <div class="product-row"><input type="checkbox" name="fv_ottimizzatori" value="1" /><span class="label">Ottimizzatori</span></div>
+            <div class="product-row"><input type="checkbox" name="fv_staz_auto" value="1" /><span class="label">Stazione di ricarica auto</span></div>
+            <div class="product-row">
+              <input type="checkbox" name="fv_inv_ibrido" id="fv_inv_ibrido" value="1" />
+              <span class="label">Inverter ibrido</span>
+            </div>
+            <div id="retrofitBox">
+              <label for="inverter_retrofit_kw">&#9889; Potenza inverter retrofit (kW)</label>
+              <select name="inverter_retrofit_kw" id="inverter_retrofit_kw">
+                <option value="3" selected>3 kW &mdash; ESY-3K (default)</option>
+                <option value="4">4 kW &mdash; ESY-4K</option>
+                <option value="5">5 kW &mdash; ESY-5K</option>
+                <option value="6">6 kW &mdash; ESY-6K</option>
+                <option value="8">8 kW &mdash; ESY-8K</option>
+              </select>
+              <p class="muted" style="margin-top:4px;">Visibile solo se non ci sono kWp (impianto retrofit). Modificabile manualmente in Odoo dopo la creazione ordine.</p>
+            </div>
+            <div class="product-row"><input type="checkbox" name="fv_inv_tradizionale" value="1" /><span class="label">Inverter tradizionale</span></div>
+            <div class="product-row"><input type="checkbox" name="fv_altro_enabled" value="1" /><span class="label">Altro (descrizione)</span><textarea name="fv_altro_desc" rows="2" placeholder="Descrizione altro"></textarea></div>
+            <div class="product-row"><span class="label">Potenza impianto (kWp)</span><input type="number" step="0.01" min="0" name="fv_kwp" id="fv_kwp" /></div>
+            <div class="product-row"><span class="label">Batteria accumulo (kWh)</span><input type="number" step="0.01" min="0" name="fv_kwh" /></div>
+            <div class="totale-row"><span>Totale sezione fotovoltaico (&euro;)</span><input type="number" step="0.01" min="0" name="fv_totale_eur" /></div>
+          </div>
+        </div>
+
+<!-- TAB 3: PROVVIGIONI -->
+        <div id="tabProvvigioni" style="display:none;">
+          <div id="provvMsg" style="text-align:center;padding:40px;color:#9b8fc7;font-size:13px;">
+            Seleziona un cliente e una pratica per visualizzare la provvigione.
+          </div>
+          <iframe id="provvIframe" src="" style="width:100%;height:1050px;border:none;border-radius:8px;margin-top:8px;display:none;"></iframe>
+        </div>
+
+        <!-- SOPRALLUOGO URGENTE -->
+        <div id="sopralluogoBox">
+          <div class="sop-title">&#128205; Sopralluogo</div>
+          <div class="options">
+            <label class="opt opt-urgent">
+              <input type="checkbox" name="anticipa_sopralluogo" id="anticipa_sopralluogo" value="1" />
+              <span style="font-weight:600;color:#e11d48">&#9889; ANTICIPA SOPRALLUOGO</span>
+            </label>
+          </div>
+          <div class="sop-desc" id="sopralluogoDesc" style="display:none">
+            &#9888; Il sopralluogo verr&agrave; organizzato <strong>prima dell'incasso dell'acconto del 30%</strong>.<br>
+            In dashboard apparir&agrave; come <strong>URGENTE</strong>.
+          </div>
+          <div class="sop-desc" style="color:#6b7280;margin-top:6px;">
+            Il sistema invier&agrave; sempre la mail di sopralluogo a Sante alla firma del contratto.
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="reset" class="btn btn-secondary" id="btnReset">Svuota</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">Carica richiesta</button>
+        </div>
+        <div id="status"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+/* PORTALE NEXT-110: Nuovo cliente fuori da n8n (era GET /lead-form). Stessa pagina e stessi webhook n8n di prima
+   (client-list, client-practices, vendor-list, lead-list, lead-submit, reinvia-mail-cliente, preventivi-import-list,
+   provvigioni-form); conferme a video del portale; sezione fotovoltaico nuova che compila i campi di sempre. */
+window.addEventListener('message',function(e){var d=e.data||{};
+ if(d.tipo==='tema'&&(d.tema==='chiaro'||d.tema==='scuro'))document.documentElement.setAttribute('data-tema',d.tema);});
+try{var t0=window.parent.document.documentElement.getAttribute('data-tema');if(t0)document.documentElement.setAttribute('data-tema',t0);}catch(e){}
+
+/* PORTALE NEXT-110: finestre a video (chiedi, avvisa, attendi) al posto di confirm/alert del browser */
+function fChiudi(){var v=document.getElementById('fVelo');if(v)v.remove();}
+function fEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function fApri(tipo,titolo,testoHtml,bottoni){fChiudi();var col={chiedi:['var(--acw,#ECFEFF)','var(--ac,#0891B2)','?'],ok:['var(--grw,#DCFCE7)','var(--gr,#16A34A)','✓'],attenzione:['var(--amw,#FEF3C7)','var(--am,#B45309)','!'],errore:['#FEE2E2','#DC2626','×'],attesa:['var(--acw,#ECFEFF)','var(--ac,#0891B2)','…']}[tipo]||['#eee','#333','·'];
+ var v=document.createElement('div');v.className='velo';v.id='fVelo';
+ v.innerHTML='<div class="fin" role="dialog" aria-modal="true"><div class="fh"><span class="fi" style="background:'+col[0]+';color:'+col[1]+'">'+col[2]+'</span><div><b>'+fEsc(titolo)+'</b></div></div><div class="fm">'+testoHtml+'</div>'+(bottoni&&bottoni.length?'<div class="fp">'+bottoni.map(function(b,i){return '<button class="fb '+(b[1]||'')+'" data-fb="'+i+'">'+fEsc(b[0])+'</button>';}).join('')+'</div>':'')+'</div>';
+ document.body.appendChild(v);
+ return new Promise(function(ok){v.addEventListener('click',function(e){var b=e.target.closest('[data-fb]');if(b){var i=+b.getAttribute('data-fb');fChiudi();ok(bottoni[i][2]);}else if(e.target===v&&tipo!=='attesa'){fChiudi();ok(null);}});
+  var s=v.querySelector('.fb.si,.fb.rosso');if(s)s.focus();});}
+function chiedi(titolo,testoHtml,si,rosso){return fApri('chiedi',titolo,testoHtml,[['Annulla','',false],[si||'Conferma',rosso?'rosso':'si',true]]);}
+function avvisa(tipo,titolo,testoHtml){return fApri(tipo,titolo,testoHtml,[['Chiudi','si',true]]);}
+function attendi(testo){fApri('attesa',testo||'Un momento…','<span class="gira"></span>'+fEsc(testo||'Sto lavorando…'),[]);}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var v=document.getElementById('fVelo');if(v&&!v.querySelector('.gira'))v.click();}});
+
+</script><script>
+  (function(){
+    var SUBMIT_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/lead-submit';
+    var CLIENT_LIST_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/client-list';
+    var CLIENT_PRACTICES_EP='https://n8n.srv1030489.hstgr.cloud/webhook/client-practices';
+    var VENDOR_LIST_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/vendor-list';
+    var LIST_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/lead-list';
+    var REINVIA_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/reinvia-mail-cliente';
+    var PREVENTIVI_IMPORT_EP='https://n8n.srv1030489.hstgr.cloud/webhook/preventivi-import-list';
+
+    var form=document.getElementById('leadForm');
+    var statusEl=document.getElementById('status');
+    var todayLabel=document.getElementById('todayLabel');
+    var submittedAt=document.getElementById('submitted_at');
+    var existing=document.getElementById('existing_client');
+    var leadIdInp=document.getElementById('lead_id');
+    var resetBtn=document.getElementById('btnReset');
+    var btnSubmit=document.getElementById('btnSubmit');
+    var modeBadge=document.getElementById('modeBadge');
+    var fullNameInp=document.getElementById('full_name');
+    var emailInp=document.getElementById('email');
+    var phoneInp=document.getElementById('phone');
+    var vendorSel=document.getElementById('vendor');
+    var existingClientId=document.getElementById('existing_client_id');
+    var existingPracticeId=document.getElementById('existing_practice_id');
+    var modeInput=document.getElementById('mode');
+    var practiceBox=document.getElementById('practiceBox');
+    var practiceSelectWrap=document.getElementById('practiceSelectWrap');
+    var practiceSelect=document.getElementById('practiceSelect');
+    var practiceModeRadios=document.querySelectorAll('input[name="practice_mode"]');
+    var reinviaBox=document.getElementById('reinviaBox');
+    var btnReinvia=document.getElementById('btnReinvia');
+    var reinviaStatus=document.getElementById('reinviaStatus');
+    var tabButtons=document.querySelectorAll('.tab-btn');
+    var tabCliente=document.getElementById('tabCliente');
+    var tabProdotti=document.getElementById('tabProdotti');
+    var fvInvIbrido=document.getElementById('fv_inv_ibrido');
+    var fvKwpInp=document.getElementById('fv_kwp');
+    var retrofitBox=document.getElementById('retrofitBox');
+    var anticipaCb=document.getElementById('anticipa_sopralluogo');
+    var sopDesc=document.getElementById('sopralluogoDesc');
+    var importPrevSel=document.getElementById('import_prev_select');
+    var importBox=document.getElementById('importBox');
+    var importStatus=document.getElementById('importStatus');
+
+    var preventiviData=[];
+
+    /* ===== IMPORTA DA PREVENTIVO ===== */
+    window.toggleImport = function(checked) {
+      importBox.style.display = checked ? 'block' : 'none';
+      if (checked && preventiviData.length === 0) {
+        loadPreventiviImport();
+      }
+    };
+
+    function loadPreventiviImport() {
+      importStatus.textContent = 'Caricamento preventivi...';
+      fetch(PREVENTIVI_IMPORT_EP)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          preventiviData = Array.isArray(d.items) ? d.items : [];
+          importPrevSel.innerHTML = '<option value="">— Seleziona preventivo —</option>';
+          preventiviData.forEach(function(item, idx){
+            var opt = document.createElement('option');
+            opt.value = idx;
+            var dt = item.created_at ? new Date(item.created_at).toLocaleDateString('it-IT') : '';
+            var tot = '';
+            if(item.fv_totale_eur) tot += ' — FV €' + item.fv_totale_eur;
+            if(item.heat_totale_eur) tot += ' — Termico €' + item.heat_totale_eur;
+            opt.textContent = (item.full_name || '—') + ' — ' + dt + tot;
+            importPrevSel.appendChild(opt);
+          });
+          importStatus.textContent = preventiviData.length + ' preventivi disponibili';
+        })
+        .catch(function(){
+          importStatus.textContent = 'Errore caricamento preventivi';
+        });
+    }
+
+    window.onImportSelect = function(val) {
+      if (val === '' || val === null) return;
+      var prev = preventiviData[parseInt(val)];
+      if (!prev) return;
+      applyPreventivo(prev);
+      importStatus.textContent = '✅ Dati importati da: ' + (prev.full_name || '') + ' — verifica e completa i campi mancanti.';
+    };
+
+    function applyPreventivo(prev) {
+      /* ANAGRAFICA */
+      fullNameInp.value = prev.full_name || '';
+      emailInp.value = prev.email || '';
+      phoneInp.value = prev.phone || '';
+
+      /* VENDITORE */
+      if (prev.vendor) {
+        setTimeout(function(){ vendorSel.value = prev.vendor; }, 300);
+      }
+
+      /* PRODUCT TYPE */
+      var pt = prev.product_type || 'fotovoltaico';
+      // mappa: il form usa 'entrambi', il preventivo usa valori separati
+      form.querySelectorAll('input[name="product_type"]').forEach(function(r){
+        r.checked = (r.value === pt);
+      });
+
+      /* TIPO AGEVOLAZIONE */
+      form.querySelectorAll('input[name="tipo_agevolazione"]').forEach(function(r){
+        r.checked = (r.value === (prev.tipo_agevolazione || 'nessuna'));
+      });
+
+      /* TERMICO */
+      setCheckbox('heat_pigma50_enabled', prev.heat_pigma50_enabled);
+      setField('heat_pigma50_taglia', prev.heat_pigma50_taglia);
+      setCheckbox('heat_pigma80_enabled', prev.heat_pigma80_enabled);
+      setField('heat_pigma80_taglia', prev.heat_pigma80_taglia);
+      setCheckbox('heat_valvole_enabled', prev.heat_valvole_enabled);
+      setField('heat_valvole_num', prev.heat_valvole_num);
+      setCheckbox('clima_alys25', prev.clima_alys25);
+      setCheckbox('clima_alys35', prev.clima_alys35);
+      setCheckbox('clima_alys50', prev.clima_alys50);
+      setCheckbox('clima_prios70', prev.clima_prios70);
+      setCheckbox('clima_dual50', prev.clima_dual50);
+      setCheckbox('heat_kit_wifi', prev.heat_kit_wifi);
+      setCheckbox('heat_altro_enabled', prev.heat_altro_enabled);
+      setField('heat_altro_desc', prev.heat_altro_desc);
+      setField('heat_totale_eur', prev.heat_totale_eur);
+
+      /* FOTOVOLTAICO */
+      setCheckbox('fv_imp_q410', prev.fv_pannello === 'LONGI_410');
+      setCheckbox('fv_imp_q470', prev.fv_pannello === 'LONGI_490');
+      setCheckbox('fv_batteria', prev.fv_bat_tipo && prev.fv_bat_tipo !== 'nessuna');
+      setCheckbox('fv_ottimizzatori', prev.fv_ottimizzatori);
+      setCheckbox('fv_staz_auto', prev.fv_staz_auto);
+      setCheckbox('fv_inv_ibrido', prev.fv_inv_ibrido);
+      setCheckbox('fv_inv_tradizionale', prev.fv_inv_tradizionale);
+      setCheckbox('fv_altro_enabled', prev.fv_altro_enabled);
+      setField('fv_altro_desc', prev.fv_altro_desc);
+      setField('fv_kwp', prev.fv_kwp);
+      setField('fv_kwh', prev.fv_kwh);
+      setField('fv_totale_eur', prev.fv_totale_eur);
+      if (prev.fv_inv_potenza) setField('inverter_retrofit_kw', prev.fv_inv_potenza);
+      checkRetrofit();
+      try{window.__fvCarica&&window.__fvCarica('preventivo',prev);}catch(e){console.warn(e)}
+    }
+
+    /* ===== RESTO DEL FORM (invariato) ===== */
+    function checkRetrofit(){
+      var isIbrido=fvInvIbrido.checked;
+      var kwp=parseFloat(fvKwpInp.value||0);
+      retrofitBox.style.display=(isIbrido && !kwp)?'block':'none';
+    }
+    fvInvIbrido.addEventListener('change',checkRetrofit);
+    fvKwpInp.addEventListener('input',checkRetrofit);
+
+    anticipaCb.addEventListener('change',function(){
+      sopDesc.style.display=anticipaCb.checked?'block':'none';
+    });
+
+   var tabProvvigioni=document.getElementById('tabProvvigioni');
+function switchTab(name){
+  tabCliente.style.display=(name==='cliente')?'block':'none';
+  tabProdotti.style.display=(name==='prodotti')?'block':'none';
+  tabProvvigioni.style.display=(name==='provvigioni')?'block':'none';
+  var isProvv = name==='provvigioni';
+  document.getElementById('sopralluogoBox').style.display=isProvv?'none':'block';
+  document.querySelector('.actions').style.display=isProvv?'none':'flex';
+  document.getElementById('fs-ownership').style.display=isProvv?'none':'block';
+  document.getElementById('fs-agevolazione').style.display=isProvv?'none':'block';
+  tabButtons.forEach(function(btn){btn.classList.toggle('active',btn.dataset.tab===name)});
+}
+    tabButtons.forEach(function(btn){btn.addEventListener('click',function(){switchTab(btn.dataset.tab)});});
+
+    function setNow(){var now=new Date();todayLabel.textContent=now.toLocaleString('it-IT');submittedAt.value=now.toISOString();}
+    setNow();
+
+    var clientPractices=[];
+
+    function updateMode(){
+      var isExisting=!!existingClientId.value;
+      var pmRadio=document.querySelector('input[name="practice_mode"]:checked');
+      var practiceMode=pmRadio?pmRadio.value:'new_practice';
+      if(!isExisting){
+        modeInput.value='new';modeBadge.textContent='NUOVA';modeBadge.className='mode-badge new';
+        btnSubmit.textContent='Carica richiesta';reinviaBox.style.display='none';
+      } else if(practiceMode==='new_practice'){
+        modeInput.value='new_practice';modeBadge.textContent='NUOVA OPPORTUNITA\'';modeBadge.className='mode-badge new';
+        btnSubmit.textContent='Crea nuova opportunita\'';existingPracticeId.value='';reinviaBox.style.display='none';
+      } else {
+        modeInput.value='edit_practice';modeBadge.textContent='MODIFICA';modeBadge.className='mode-badge edit';
+        btnSubmit.textContent='Salva modifiche';existingPracticeId.value=practiceSelect.value||'';reinviaBox.style.display='block';
+      }
+    }
+
+    practiceModeRadios.forEach(function(r){r.addEventListener('change',function(){
+      var isEdit=(r.value==='edit_practice');
+      practiceSelectWrap.style.display=isEdit?'block':'none';
+      updateMode();
+      if(isEdit&&practiceSelect.value){fillProductsFromPractice(practiceSelect.value);}
+      else if(!isEdit){clearProducts();}
+    });});
+
+   practiceSelect.addEventListener('change',function(){
+  existingPracticeId.value=practiceSelect.value;
+  updateMode();
+  if(practiceSelect.value){
+    fillProductsFromPractice(practiceSelect.value);
+    document.getElementById('provvIframe').src='https://n8n.srv1030489.hstgr.cloud/webhook/provvigioni-form?practice_id='+practiceSelect.value;
+    document.getElementById('provvMsg').style.display='none';
+    document.getElementById('provvIframe').style.display='block';
+    document.getElementById('tabBtnProvv').style.display='block';
+  }
+});
+    function loadVendors(){
+      fetch(VENDOR_LIST_ENDPOINT).then(function(res){return res.json()}).then(function(data){
+        var vendors=Array.isArray(data.vendors)?data.vendors:[];
+        vendorSel.innerHTML='<option value="">Seleziona venditore...</option>';
+        vendors.forEach(function(v){var opt=document.createElement('option');opt.value=v.name;opt.textContent=v.name;vendorSel.appendChild(opt);});
+      }).catch(function(e){console.warn('Errore venditori:',e)});
+    }
+
+    function loadClients(){
+      fetch(CLIENT_LIST_ENDPOINT).then(function(res){return res.json()}).then(function(data){
+        var clients=Array.isArray(data.clients)?data.clients:(Array.isArray(data)?data:[]);
+        existing.innerHTML='<option value="">&#10133; Nuovo cliente</option>';
+        clients.forEach(function(c){
+          if(!c.full_name||c.full_name.trim().length<2)return;
+          var opt=document.createElement('option');
+          opt.value=c.id;
+          opt.setAttribute('data-name',c.full_name||'');
+          opt.setAttribute('data-email',(c.email||'').trim());
+          opt.setAttribute('data-phone',(c.phone||'').trim());
+          var label=c.full_name;
+          if(c.email)label+=' - '+c.email;
+          if(c.res_city)label+=' - '+c.res_city;
+          opt.textContent=label;
+          existing.appendChild(opt);
+        });
+        // Se l'indirizzo porta un cliente, lo scegliamo da soli e lasciamo che
+        // il form faccia il resto: carica le pratiche e passa in modalita'
+        // cliente esistente, esattamente come se l'avessi scelto a mano.
+        try {
+          var _qc = new URLSearchParams(window.location.search);
+          var _cWanted = _qc.get('client_id');
+          if (_cWanted) {
+            existing.value = _cWanted;
+            if (existing.value === _cWanted) {
+              existing.dispatchEvent(new Event('change'));
+            }
+          }
+        } catch (e) { /* indirizzo senza parametri: si tira avanti */ }
+      }).catch(function(e){console.warn('Errore clienti:',e)});
+    }
+
+    function loadPractices(clientId){
+      clientPractices=[];
+      practiceSelect.innerHTML='<option value="">— Seleziona preventivo —</option>';
+      fetch(CLIENT_PRACTICES_EP+'?client_id='+encodeURIComponent(clientId))
+        .then(function(res){return res.json()})
+        .then(function(data){
+          var practices=[];
+          if(Array.isArray(data)){practices=data.map(function(r){return r.practices||r}).filter(Boolean);}
+          else if(data.practices){practices=Array.isArray(data.practices)?data.practices:[data.practices];}
+          clientPractices=practices;
+          if(practices.length===0){
+            practiceSelect.innerHTML='<option value="">Nessuna pratica trovata</option>';
+          } else {
+            practices.forEach(function(p){
+              var opt=document.createElement('option');opt.value=p.id;
+              var dt=p.created_at?new Date(p.created_at).toLocaleDateString('it-IT'):'';
+              var totFV=p.fv_totale_eur?(' - FV: '+p.fv_totale_eur+' EUR'):'';
+              var totHeat=p.heat_totale_eur?(' - Termico: '+p.heat_totale_eur+' EUR'):'';
+              opt.textContent=(p.product_type||'N/D')+' - '+(p.status||'')+' - '+dt+totFV+totHeat;
+              practiceSelect.appendChild(opt);
+            });
+          }
+          // Se l'indirizzo porta anche la pratica, la selezioniamo: succede
+          // quando si arriva dal tasto «Non va bene» della mail di controllo.
+          try {
+            var _qp = new URLSearchParams(window.location.search);
+            var _prWanted = _qp.get('practice_id');
+            if (_prWanted) {
+              practiceSelect.value = _prWanted;
+              if (practiceSelect.value === _prWanted) {
+                practiceSelect.dispatchEvent(new Event('change'));
+              }
+            }
+          } catch (e) { /* indirizzo senza parametri: si tira avanti */ }
+        }).catch(function(e){console.warn('Errore pratiche:',e)});
+    }
+
+    function setCheckbox(name,val){var cb=form.querySelector('[name="'+name+'"]');if(cb)cb.checked=!!val;}
+    function setField(name,val){var el=form.querySelector('[name="'+name+'"]');if(el)el.value=(val!==null&&val!==undefined)?val:'';}
+
+    function clearProducts(){
+      form.querySelectorAll('#tabProdotti input[type="checkbox"]').forEach(function(cb){cb.checked=false;});
+      form.querySelectorAll('#tabProdotti input[type="number"],#tabProdotti textarea,#tabProdotti select').forEach(function(inp){inp.value='';});
+      retrofitBox.style.display='none';anticipaCb.checked=false;sopDesc.style.display='none';
+      setField('note','');
+      try{window.__fvCarica&&window.__fvCarica('vuoto',{});}catch(e){console.warn(e)}
+    }
+
+    function fillProductsFromPractice(practiceId){
+      var p=clientPractices.find(function(pr){return pr.id===practiceId});
+      if(!p)return;
+      clearProducts();
+      setCheckbox('heat_pigma50_enabled',p.heat_pigma50_enabled);setField('heat_pigma50_taglia',p.heat_pigma50_taglia);
+      setCheckbox('heat_pigma80_enabled',p.heat_pigma80_enabled);setField('heat_pigma80_taglia',p.heat_pigma80_taglia);
+      setCheckbox('heat_valvole_enabled',p.heat_valvole_enabled);setField('heat_valvole_num',p.heat_valvole_num);
+      setCheckbox('clima_alys25',p.clima_alys25);setCheckbox('clima_alys35',p.clima_alys35);
+      setCheckbox('clima_alys50',p.clima_alys50);setCheckbox('clima_prios70',p.clima_prios70);
+      setCheckbox('clima_dual50',p.clima_dual50);setCheckbox('heat_kit_wifi',p.heat_kit_wifi);
+      setCheckbox('heat_altro_enabled',p.heat_altro_enabled);setField('heat_altro_desc',p.heat_altro_desc);
+      setField('heat_totale_eur',p.heat_totale_eur);
+      setCheckbox('fv_imp_q470',p.fv_imp_q470);setCheckbox('fv_imp_q410',p.fv_imp_q410);
+      setCheckbox('fv_batteria',p.fv_batteria);setCheckbox('fv_ottimizzatori',p.fv_ottimizzatori);
+      setCheckbox('fv_staz_auto',p.fv_staz_auto);setCheckbox('fv_inv_ibrido',p.fv_inv_ibrido);
+      setCheckbox('fv_inv_tradizionale',p.fv_inv_tradizionale);setCheckbox('fv_altro_enabled',p.fv_altro_enabled);
+      setField('fv_altro_desc',p.fv_altro_desc);setField('fv_kwp',p.fv_kwp);setField('fv_kwh',p.fv_kwh);
+      setField('fv_totale_eur',p.fv_totale_eur);
+      if(p.inverter_retrofit_kw){setField('inverter_retrofit_kw',p.inverter_retrofit_kw);}else{setField('inverter_retrofit_kw',3);}
+      checkRetrofit();
+      setField('note',p.note);
+      try{window.__fvCarica&&window.__fvCarica('pratica',p);}catch(e){console.warn(e)}
+      if(p.anticipa_sopralluogo){anticipaCb.checked=true;sopDesc.style.display='block';}else{anticipaCb.checked=false;sopDesc.style.display='none';}
+      if(p.vendor)vendorSel.value=p.vendor;
+      if(p.channel){form.querySelectorAll('input[name="channel"]').forEach(function(r){r.checked=(r.value===p.channel)});}
+      if(p.product_type){form.querySelectorAll('input[name="product_type"]').forEach(function(r){r.checked=(r.value===p.product_type)});}
+      if(p.tipo_agevolazione){form.querySelectorAll('input[name="tipo_agevolazione"]').forEach(function(r){r.checked=(r.value===p.tipo_agevolazione)});}
+      if(p.ownership_type!==undefined){form.querySelectorAll('input[name="ownership_type"]').forEach(function(r){r.checked=(r.value===(p.ownership_type||''));});}
+    }
+
+    existing.addEventListener('change',function(){
+      var clientId=existing.value;var opt=existing.selectedOptions[0];
+      if(!clientId){
+        existingClientId.value='';existingPracticeId.value='';practiceBox.style.display='none';
+        fullNameInp.value='';emailInp.value='';phoneInp.value='';
+        fullNameInp.readOnly=false;emailInp.readOnly=false;phoneInp.readOnly=false;
+        clearProducts();updateMode();return;
+      }
+      existingClientId.value=clientId;
+      fullNameInp.value=opt.getAttribute('data-name')||'';
+      emailInp.value=opt.getAttribute('data-email')||'';
+      phoneInp.value=opt.getAttribute('data-phone')||'';
+      fullNameInp.readOnly=false;emailInp.readOnly=false;phoneInp.readOnly=false;
+      practiceBox.style.display='block';
+      var newPracticeRadio=document.querySelector('input[name="practice_mode"][value="new_practice"]');
+      if(newPracticeRadio)newPracticeRadio.checked=true;
+      practiceSelectWrap.style.display='none';clearProducts();loadPractices(clientId);updateMode();
+    });
+
+    resetBtn.addEventListener('click',function(){
+      existing.value='';existingClientId.value='';existingPracticeId.value='';
+      practiceBox.style.display='none';
+      fullNameInp.readOnly=false;emailInp.readOnly=false;phoneInp.readOnly=false;
+      fullNameInp.value='';emailInp.value='';phoneInp.value='';
+      vendorSel.value='';clearProducts();
+      statusEl.textContent='';statusEl.classList.remove('error','success');
+      reinviaBox.style.display='none';reinviaStatus.textContent='';
+      document.getElementById('cb_import_prev').checked=false;
+      importBox.style.display='none';
+      importPrevSel.value='';importStatus.textContent='';
+     document.getElementById('provvIframe').style.display='none';
+     document.getElementById('provvMsg').style.display='block';
+      document.getElementById('provvIframe').src='';
+      switchTab('cliente');
+      updateMode();setNow();
+    });
+
+    form.addEventListener('submit',async function(){
+      statusEl.classList.remove('error','success');statusEl.textContent='Controllo dati...';setNow();
+      var currentMode=modeInput.value;
+      var email=(emailInp.value||'').trim().toLowerCase();
+      var tipo=(form.product_type.value||'fotovoltaico').toLowerCase();
+      var nome=(fullNameInp.value||'').trim();
+      if(currentMode==='edit_practice'){
+        if(!existingPracticeId.value){statusEl.classList.add('error');statusEl.textContent='Seleziona una pratica da modificare.';return;}
+        statusEl.textContent='Salvataggio modifiche...';
+        var fd=new FormData(form);
+        fetch(SUBMIT_ENDPOINT,{method:'POST',body:fd}).then(function(res){
+          if(!res.ok){statusEl.classList.add('error');statusEl.textContent='Errore '+res.status+' durante il salvataggio.';return;}
+          return res.json()
+       }).then(function(j){
+          if(j){
+            statusEl.classList.add('success');
+            statusEl.textContent='Pratica aggiornata con successo.';
+            var pid=existingPracticeId.value||practiceSelect.value||'';
+            if(pid){
+              document.getElementById('provvIframe').src='https://n8n.srv1030489.hstgr.cloud/webhook/provvigioni-form?practice_id='+pid;
+	   document.getElementById('provvMsg').style.display='none';
+	   document.getElementById('provvIframe').style.display='block';
+              document.getElementById('tabBtnProvv').style.display='block';
+            }
+          }
+        }).catch(function(){statusEl.classList.add('error');statusEl.textContent='Errore di rete.';});
+        return;
+      }
+      if(currentMode==='new_practice'){
+        var msg='Stai creando una NUOVA OPPORTUNITA\' per:\n\n>>> '+nome+' <<<\n\nVerra\' inviata la mail di richiesta documentazione.\n\nPremi "OK" per procedere, "Annulla" per bloccare.';
+        if(!await chiedi('Nuova opportunità','Stai creando una <b>nuova opportunità</b> per <b>'+fEsc(nome)+'</b>.<br><br>Parte la mail di richiesta documentazione al cliente.','Procedi')){statusEl.classList.add('error');statusEl.textContent='Invio annullato.';return;}
+      }
+      if(currentMode==='new'){
+        statusEl.textContent='Verifica duplicati...';
+        fetch(LIST_ENDPOINT).then(function(res){return res.ok?res.json():null}).then(async function(data){
+          if(data){
+            var leads=Array.isArray(data.leads)?data.leads:[];
+            var duplicato=leads.find(function(l){return(l.email||'').toLowerCase()===email&&(l.product_type||'fotovoltaico').toLowerCase()===tipo;});
+            if(duplicato){
+              var dmsg='ATTENZIONE!\n\nHai gia\' caricato una richiesta per questo cliente.\n\nCliente: >>> '+(nome||email)+' <<<\nTipologia impianto: '+tipo+'\n\nSe premi "OK" verra\' INVIATA NUOVAMENTE la mail.\nSe premi "Annulla" l\'invio verra\' BLOCCATO.';
+              if(!await chiedi('Richiesta già caricata','Hai già caricato una richiesta per <b>'+fEsc(nome||email)+'</b>, tipologia <b>'+fEsc(tipo)+'</b>.<br><br>Se procedi, la mail al cliente parte <b>di nuovo</b>.','Invia di nuovo',true)){statusEl.classList.add('error');statusEl.textContent='Invio annullato: richiesta gia\' presente.';return;}
+            }
+          }
+          doSubmit();
+        }).catch(function(){doSubmit();});
+        return;
+      }
+      doSubmit();
+    });
+
+function doSubmit(){
+      statusEl.textContent='Invio in corso...';
+      var fd=new FormData(form);
+      fetch(SUBMIT_ENDPOINT,{method:'POST',body:fd}).then(function(res){
+        if(!res.ok){statusEl.classList.add('error');statusEl.textContent='Errore '+res.status+' durante l\'invio.';return null;}
+        return res.json()
+    }).then(function(j){
+        if(j){
+          statusEl.classList.add('success');
+          statusEl.textContent=(j&&j.message)||'Richiesta inviata e salvata.';
+          if(j.practice_id){
+            document.getElementById('provvIframe').src='https://n8n.srv1030489.hstgr.cloud/webhook/provvigioni-form?practice_id='+j.practice_id;
+	 document.getElementById('provvMsg').style.display='none';
+	 document.getElementById('provvIframe').style.display='block';
+            document.getElementById('tabBtnProvv').style.display='block';
+          }
+          loadClients();
+        }
+      }).catch(function(){statusEl.classList.add('error');statusEl.textContent='Errore di rete. Controlla la connessione.';});
+    }
+   
+    btnReinvia.addEventListener('click',async function(){
+      var pid=existingPracticeId.value||practiceSelect.value||'';
+      reinviaStatus.textContent='';reinviaStatus.style.color='';
+      if(!pid){reinviaStatus.style.color='var(--error)';reinviaStatus.textContent='Seleziona prima una pratica.';return;}
+      var msg='Stai per REINVIARE la mail di richiesta documentazione al cliente usando i dati ATTUALMENTE salvati nel database.\n\nPremi "OK" per procedere.';
+      if(!await chiedi('Reinvia la mail al cliente','Rimando al cliente la mail di richiesta documentazione con i dati <b>salvati adesso</b> nella pratica.','Reinvia')){reinviaStatus.style.color='var(--error)';reinviaStatus.textContent='Reinvio annullato.';return;}
+      reinviaStatus.style.color='var(--text-muted)';reinviaStatus.textContent='Reinvio in corso...';
+      fetch(REINVIA_ENDPOINT+'?practice_id='+encodeURIComponent(pid)).then(function(res){
+        if(!res.ok){reinviaStatus.style.color='var(--error)';reinviaStatus.textContent='Errore '+res.status+' durante il reinvio.';return;}
+        reinviaStatus.style.color='var(--success)';reinviaStatus.textContent='\u2705 Mail reinviata con successo al cliente!';
+      }).catch(function(){reinviaStatus.style.color='var(--error)';reinviaStatus.textContent='Errore di rete durante il reinvio.';});
+    });
+
+    loadVendors();loadClients();updateMode();
+  })();
+  </script>
+<script id="nuovo-cliente-js">
+/* PORTALE NEXT-110: Nuovo cliente come la tavola approvata da Sante.
+   Sposta i nodi di prima senza toccarne id, nomi e gestori: salvataggio, invio mail e provvigione restano quelli di n8n.
+   La sezione fotovoltaico e nuova ma COMPILA I CAMPI DI SEMPRE (spunte, kWp, kWh, note), cosi contratto e ordine Odoo
+   lavorano come oggi. Regole: documento di progetto claude/nuovo-cliente-prodotti-il-disegno.md */
+(function(){
+ var I={cont:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+  doc:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>',
+  pin:'<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  fire:'<path d="M12 22c4 0 7-3 7-7 0-5-5-8-5-13-3 2-5 5-5 8-1-1-2-2-2-4-2 2-2 5-2 9 0 4 3 7 7 7z"/>',
+  win:'<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 3v18M4 12h16"/>',
+  pot:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',mod:'<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 12h18M9 5v14M15 5v14"/>',
+  inv:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12h2l1-3 2 6 1-3h2"/>',bat:'<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M7 10v4M11 10v4"/>',
+  ott:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',tri:'<path d="M4 7h16M4 12h16M4 17h16"/>',casa:'<path d="M3 11 12 4l9 7v9H3z"/>',
+  back:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',col:'<path d="M7 3h7v18H7zM14 8h3l2 3v6a2 2 0 0 1-4 0v-3"/>',met:'<circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/>',
+  x:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'};
+ function ico(k,n){n=n||15;return '<svg width="'+n+'" height="'+n+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+I[k]+'</svg>';}
+ function $(s,c){return (c||document).querySelector(s);} function $$(s,c){return [].slice.call((c||document).querySelectorAll(s));}
+ function el(t,cls,html){var e=document.createElement(t);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+ function card(k,col,tit,sub){var c=el('section','pc');var h=el('div','ph','<span class="pi '+(col||'')+'">'+ico(k)+'</span><div><b>'+tit+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div><span class="px"></span>');var b=el('div','pb');c.appendChild(h);c.appendChild(b);return {c:c,b:b,x:h.querySelector('.px'),h:h};}
+ function sposta(dest){[].slice.call(arguments,1).forEach(function(n){if(n)dest.appendChild(n);});}
+ function riga(etichetta,controllo){var r=el('div','fr');r.appendChild(el('span','',etichetta));if(controllo)r.appendChild(controllo);return r;}
+ var deposito=null;function daFieldset(fs){if(!fs)return null;var lg=fs.querySelector('legend'),op=fs.querySelector('.options');if(op)op.classList.add('seg');var r=riga(lg?lg.textContent.trim():'',op);
+  /* il fieldset vuoto va in un contenitore nascosto: switchTab di prima gli rimette display:block */
+  if(!deposito){deposito=el('div');deposito.hidden=true;deposito.style.display='none';document.getElementById('leadForm').appendChild(deposito);}deposito.appendChild(fs);return r;}
+ function fmt(v,d){return Number(v).toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d});}
+ function pulisci(root){var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){n.nodeValue=n.nodeValue.replace(/[←-⯿☀-➿️]|[\uD83C-\uD83E][\uDC00-\uDFFF]/g,'');}}
+
+ /* cataloghi: gli stessi di catalogo_prodotti (moduli e batterie attivi) */
+ var MOD=[["AIKO Neostar 2P60",520,""],["AIKO Neostar 3S+54",485,"AIKO_485"],["LONGi Hi-MO X10 Scientist",490,"LONGI_490"],["LONGi Hi-MO 6",430,""],["LONGi Hi-MO 6",410,"LONGI_410"],["LONGi Hi-MO 5m",410,""],["LONGi Hi-MO X6",580,""],["FuturaSun Silk Nova Orange",400,"FU400M"],["INVENT Q470",470,""]];
+ var BAT=[["WeCo 5K0-LT",5.12],["WeCo 16K0-LV",16.3],["WeCo ESY Pack 5 kWh",5],["WeCo ESY Pack 10 kWh",10],["ZCS Azzurro ZSX 5000S",5.1]];
+ var INV=[["WeCo ESX-6K Monofase",6],["WeCo ESY-10K Trifase",10],["WeCo XTR-3 LV 6K",6],["WeCo XTR-3 LV 8K",8],["WeCo XTR-3 LV 10K",10],["ZCS 1PH HYD ZSS HP",6],["ZCS 3000SP",3]];
+
+ function via(){
+  var form=$('#leadForm');if(!form)return;
+  var C=$('.container>.card');
+  /* ---------- 1 · dati cliente ---------- */
+  var T1=$('#tabCliente'),kids=[].slice.call(T1.children);
+  var fsCh=kids.filter(function(n){return n.tagName==='FIELDSET';});
+  var g=el('div','g2'),L=el('div','col'),Rr=el('div','col');
+  var cA=card('cont','','Anagrafica','Cliente esistente o nuovo');
+  var li=$('#labelImport'),cb=$('#cb_import_prev');
+  if(li&&cb){cb.classList.add('sw-in');li.className='swl';li.innerHTML='';li.appendChild(cb);li.appendChild(document.createTextNode('Importa da preventivo'));cA.x.appendChild(li);}
+  kids.forEach(function(n){if(n.tagName!=='FIELDSET'&&n!==li)cA.b.appendChild(n);});
+  var cC=card('doc','vi','Contratto e pratica','Canale, tipologia, proprietà e agevolazione');
+  fsCh.forEach(function(fs){var r=daFieldset(fs);if(r)cC.b.appendChild(r);});
+  ['#fs-ownership','#fs-agevolazione'].forEach(function(id){var fs=$(id);if(!fs)return;var r=daFieldset(fs);if(r){cC.b.appendChild(r);r.id=id.slice(1)+'-riga';}});
+  var cS=card('pin','rd','Sopralluogo','La mail di sopralluogo a Sante parte sempre alla firma del contratto.');
+  var sop=$('#sopralluogoBox');if(sop){cS.b.appendChild(sop);$$('.sop-desc',sop).forEach(function(d){if(/sempre/.test(d.textContent))d.remove();});var o=$('.opt',sop);if(o){var c2=$('input',o);c2.classList.add('sw-in');o.className='swl';o.style.marginTop='12px';}}
+  sposta(L,cA.c);sposta(Rr,cC.c,cS.c);sposta(g,L,Rr);T1.insertBefore(g,T1.firstChild);
+  /* lo switchTab di prima nasconde fieldset e sopralluogo solo in provvigione: ora stanno nel tab 1 */
+
+  /* ---------- 2 · prodotti venduti ---------- */
+  var T2=$('#tabProdotti'),sez=$$('.product-section',T2),heatS=sez[0],fvS=sez[1];
+  /* riga di sola lettura: proprietà e agevolazione si scelgono nel tab 1 */
+  var pills=el('div','pills');T2.insertBefore(pills,T2.firstChild);
+  function aggPills(){function v(n){var r=form.querySelector('input[name="'+n+'"]:checked');if(!r)return '—';var s=r.parentNode.querySelector('span');return s?s.textContent.trim():r.value;}
+   pills.innerHTML='<span class="pill2"><i>Proprietà</i>'+v('ownership_type')+'</span><span class="pill2"><i>Agevolazione</i>'+v('tipo_agevolazione')+'</span><a id="vaiDati">si cambia in Dati cliente →</a>';
+   $('#vaiDati').onclick=function(){var b=$('.tab-btn[data-tab="cliente"]');if(b)b.click();};}
+  form.addEventListener('change',function(e){if(e.target.name==='ownership_type'||e.target.name==='tipo_agevolazione')aggPills();});aggPills();
+
+  /* fotovoltaico nuovo */
+  var cF=card('sun','am','Divisione impianti fotovoltaici','—');cF.c.id='fvCard';
+  var chipI=el('span','chipx','nuovo impianto');cF.x.appendChild(chipI);
+  var sw=function(id,lab){return '<button type="button" class="sw" role="switch" aria-checked="false" id="'+id+'" aria-label="'+lab+'"></button>';};
+  var tile=function(id,k,t,body,cls,s){return '<div class="ft '+(cls||'')+'" id="'+id+'"><div class="ftl">'+ico(k,13)+t+(s||'')+'</div>'+body+'</div>';};
+  var piccola=function(k,ic,t,h){return tile('t_'+k,ic,t,'<span class="fv" id="v_'+k+'">No</span>'+(h?'<span class="fh">'+h+'</span>':''),'off',sw('s_'+k,t));};
+  cF.b.innerHTML='<div class="fr" style="border:0;padding-top:14px"><span>Intervento</span><span class="sg" id="sgInt"><button type="button" data-v="nuovo">Nuovo impianto</button><button type="button" data-v="ampliamento">Ampliamento</button><button type="button" data-v="rifacimento">Rifacimento totale</button><button type="button" data-v="accumulo">Aggiunta accumulo</button></span></div>'
+   +'<div class="fvg">'
+   +tile('tPot','pot','Potenza','<span class="fbig" id="fPot">—</span><span class="fh" id="fPotH"></span>')
+   +tile('tMod','mod','Moduli','<div class="frow"><select id="fMod" aria-label="Modulo"></select><span class="fx">×</span><input type="number" id="fNMod" min="0" step="1" aria-label="Quantità moduli"></div><span class="fh">dal catalogo prodotti, lo stesso del preventivo</span>','s3')
+   +tile('tInv','inv','Inverter','<div class="frow"><span class="sg" id="sgInv"><button type="button" data-v="ibrido" class="on">Ibrido</button><button type="button" data-v="tradizionale">Tradizionale</button></span></div><div class="frow" id="fInvMod"><select id="fInv" aria-label="Modello inverter" disabled></select><span class="fx">×</span><input type="number" id="fNInv" value="1" min="1" aria-label="Quantità inverter" disabled><span class="arr" title="Il modello si salverà quando la pratica avrà i campi nuovi">in arrivo</span></div><div id="fRetro"></div>','s2',sw('sInv','Inverter'))
+   +tile('tBat','bat','Accumulo','<div class="frow"><select id="fBat" aria-label="Modello batteria"></select><span class="fx">×</span><input type="number" id="fNBat" value="1" min="1" aria-label="Quantità batterie"></div><span class="fh">totale <b id="fKwh" style="font-family:\'JetBrains Mono\',monospace;color:var(--text-dim)">—</b></span>','s2',sw('sBat','Accumulo'))
+   +tile('tOtt','ott','Ottimizzatori','<div class="frow"><input type="number" id="fNOtt" min="1" disabled aria-label="Numero ottimizzatori"><span class="fh">uno per modulo</span><span class="arr" title="Il numero si salverà quando la pratica avrà i campi nuovi">in arrivo</span></div>','off',sw('sOtt','Ottimizzatori'))
+   +piccola('trifase','tri','Trifase')+piccola('integrato','casa','Impianto integrato')+piccola('backup','back','Backup')+piccola('colonnina','col','Colonnina')
+   +piccola('meter','met','Meter','da solo con Ampliamento e Aggiunta accumulo')+piccola('smontaggio','x','Smontaggio impianto esistente','da solo con Rifacimento totale')+piccola('smaltimento','x','Smaltimento moduli','da solo con Rifacimento totale')
+   +'</div><div class="fvlab">Note per il contratto</div><div class="fvnote"><div><div class="hdn">Note automatiche <span class="tg">scritte dalla pagina</span></div><div class="nbox" id="fNoteAuto"></div></div><div id="fNoteV"><div class="hdn">Note del venditore <span class="tg m">scritte a mano</span></div></div></div>';
+  MOD.forEach(function(m,i){$('#fMod',cF.b).add(new Option(m[0]+' · '+m[1]+' Wp',i));});
+  BAT.forEach(function(m,i){$('#fBat',cF.b).add(new Option(m[0]+' · '+fmt(m[1],2)+' kWh',i));});
+  INV.forEach(function(m,i){$('#fInv',cF.b).add(new Option(m[0]+' · '+m[1]+' kW',i));});
+  /* i campi veri restano quelli di prima, nascosti: la sezione nuova li compila */
+  var ta=form.querySelector('[name="fv_altro_desc"]');if(ta){ta.placeholder='Condizioni particolari, finanziamento, accordi con il cliente…';ta.rows=4;$('#fNoteV',cF.b).appendChild(ta);}
+  var rb=$('#retrofitBox');if(rb)$('#fRetro',cF.b).appendChild(rb);
+  var tot=fvS?$('.totale-row',fvS):null;var fF=el('div','pf');if(tot)fF.appendChild(tot);cF.c.appendChild(fF);
+  if(fvS){fvS.style.display='none';T2.appendChild(fvS);}
+  T2.insertBefore(cF.c,pills.nextSibling);
+
+  /* riscaldamento: stesse righe di prima, con gli interruttori */
+  var g2=el('div','g2');g2.style.marginTop='16px';
+  var cH=card('fire','rd','Divisione riscaldamento / climatizzazione','Pompe di calore e climatizzatori Ariston');
+  if(heatS){var tt=$('.section-title',heatS);if(tt)tt.remove();
+   $$('.product-row',heatS).forEach(function(r){r.classList.add('comp');var c=$('input[type=checkbox]',r);if(c){c.classList.add('sw-in');r.appendChild(c);}var t=$('textarea',r);if(t){t.rows=2;t.style.height='64px';}cH.b.appendChild(r);});
+   var th=$('.totale-row',heatS);var hf=el('div','pf');if(th)hf.appendChild(th);cH.c.appendChild(hf);heatS.style.display='none';T2.appendChild(heatS);}
+  /* serramenti: nella pratica non ci sono ancora i campi */
+  var cW=card('win','bl','Divisione serramenti','Infissi, porte e oscuranti');cW.c.classList.add('spenta');cW.x.innerHTML='<span class="chipx grigio">in arrivo</span>';
+  ['Finestre e portefinestre','Porta blindata / portoncino','Persiane e scuri','Tapparelle','Zanzariere','Smontaggio e smaltimento vecchi infissi','Altro'].forEach(function(t){cW.b.appendChild(el('div','comp','<span class="label">'+t+'</span><input type="checkbox" class="sw-in" disabled>'));});
+  cW.b.appendChild(el('p','fh','Si accende quando la pratica avrà i campi dei serramenti: oggi non si salverebbero.'));cW.b.lastChild.style.margin='12px 0 0';
+  sposta(g2,cH.c,cW.c);T2.insertBefore(g2,cF.c.nextSibling);
+
+  /* ---------- barra in fondo ---------- */
+  var act=$('.actions');if(act){act.classList.add('barra-fondo');var st=$('#status');var sp=el('span','sp');act.insertBefore(sp,$('#btnSubmit'));if(st)act.insertBefore(st,sp);
+   var av=el('button','btn avanti','');av.type='button';act.appendChild(av);
+   function nomi(){var t=$$('.tab-btn').filter(function(b){return b.style.display!=='none';}),i=t.findIndex(function(b){return b.classList.contains('active');});
+    if(i>=0&&i<t.length-1&&t[i+1].dataset.tab!=='provvigioni'){av.style.display='';av.textContent='Avanti · '+t[i+1].textContent.trim();av.onclick=function(){t[i+1].click();window.scrollTo({top:0,behavior:'smooth'});};}else av.style.display='none';}
+   nomi();new MutationObserver(nomi).observe($('.tabs'),{subtree:true,attributes:true,attributeFilter:['class','style']});}
+  pulisci(document.body);
+
+  /* ---------- motore della sezione fotovoltaico ---------- */
+  var F=cF.b,INT='nuovo',INVT='ibrido',kwpSalvato=null,kwhSalvato=null;
+  function on(id){var s=$('#'+id,F);return s&&s.getAttribute('aria-checked')==='true';}
+  function set(id,v){var s=$('#'+id,F);if(s)s.setAttribute('aria-checked',v?'true':'false');}
+  function chk(n,v){var c=form.querySelector('[name="'+n+'"]');if(c)c.checked=!!v;}
+  function val(n,v){var c=form.querySelector('[name="'+n+'"]');if(c)c.value=v;}
+  function segOn(id,v){$$('#'+id+' button',F).forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});}
+  function intervento(v,auto){INT=v;segOn('sgInt',v);
+   if(auto){set('s_meter',v==='ampliamento'||v==='accumulo');set('s_smontaggio',v==='rifacimento');set('s_smaltimento',v==='rifacimento');
+    if(v==='accumulo'){set('sBat',true);set('sInv',true);INVT='ibrido';segOn('sgInv','ibrido');}}
+   calc();}
+  $('#sgInt',F).addEventListener('click',function(e){var b=e.target.closest('button');if(b){kwpSalvato=null;intervento(b.dataset.v,true);}});
+  $('#sgInv',F).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;INVT=b.dataset.v;segOn('sgInv',INVT);calc();});
+  F.addEventListener('click',function(e){var s=e.target.closest('.sw');if(!s)return;set(s.id,!on(s.id));if(s.id==='sOtt'&&on('sOtt'))$('#fNOtt',F).value=$('#fNMod',F).value||'';if(s.id==='sBat')kwhSalvato=null;calc();});
+  ['fMod','fNMod'].forEach(function(i){$('#'+i,F).addEventListener('input',function(){kwpSalvato=null;calc();});});
+  ['fBat','fNBat'].forEach(function(i){$('#'+i,F).addEventListener('input',function(){kwhSalvato=null;calc();});});
+  if(ta)ta.addEventListener('input',calc);
+
+  function calc(){
+   var acc=INT==='accumulo',m=MOD[+$('#fMod',F).value]||MOD[0],n=Math.max(0,parseInt($('#fNMod',F).value,10)||0);
+   var kwp=acc?0:(kwpSalvato!=null?kwpSalvato:Math.round(m[1]*n)/1000);
+   $('#tMod',F).classList.toggle('dis',acc);$('#tOtt',F).classList.toggle('dis',acc);if(acc)set('sOtt',false);
+   $('#fPot',F).textContent=fmt(kwp,2)+' kWp';
+   $('#fPotH',F).textContent=acc?'nessun modulo: retrofit':(kwpSalvato!=null?'potenza salvata nella pratica':(n?n+' × '+m[1]+' Wp, calcolata':'scegli modulo e quantità'));
+   var invOn=on('sInv'),batOn=on('sBat'),ottOn=on('sOtt');
+   $('#tInv',F).classList.toggle('off',!invOn);$('#tBat',F).classList.toggle('off',!batOn);$('#tOtt',F).classList.toggle('off',!ottOn);
+   if($('#fBat',F).value!=='-1'){var vv=$('#fBat',F).querySelector('option[value="-1"]');if(vv)vv.remove();}
+   var b=BAT[+$('#fBat',F).value],nb=Math.max(1,parseInt($('#fNBat',F).value,10)||1);
+   var kwh=batOn?(kwhSalvato!=null?kwhSalvato:Math.round((b?b[1]:0)*nb*100)/100):0;
+   $('#fKwh',F).textContent=fmt(kwh,2)+' kWh';
+   if(rb)rb.style.display=(invOn&&INVT==='ibrido'&&!kwp)?'block':'none';
+   $('#fInvMod',F).style.display=(invOn&&INVT==='ibrido'&&!kwp)?'none':'';
+   var V={};['trifase','integrato','backup','colonnina','meter','smontaggio','smaltimento'].forEach(function(k){var v=on('s_'+k);V[k]=v;$('#t_'+k,F).classList.toggle('off',!v);var x=$('#v_'+k,F);x.textContent=v?'Sì':'No';x.classList.toggle('si',v);});
+   chipI.textContent={nuovo:'nuovo impianto',ampliamento:'ampliamento',rifacimento:'rifacimento totale',accumulo:'aggiunta accumulo · retrofit'}[INT];
+   $('.ph small',cF.c).textContent=fmt(kwp,2)+' kWp · '+fmt(kwh,2)+' kWh';
+   /* note automatiche: solo le voci decise da Sante, scritte per esteso */
+   var attivo=kwp>0||batOn||invOn,r=[];
+   if(attivo){
+    var dicaGia=m[1]===410||m[0]==='INVENT Q470';   /* la casella del contratto lo dice gia */
+    if(!acc&&n>0&&kwpSalvato==null&&!dicaGia)r.push('In deroga a quanto spuntato si installano '+n+' moduli '+m[0]+' da '+m[1]+' Wp.');
+    if(V.trifase)r.push('Impianto trifase.');
+    var Li=[];if(V.integrato)Li.push('impianto integrato');if(V.backup)Li.push('sistema di backup');if(V.meter)Li.push('fornitura e installazione del meter');if(V.smontaggio)Li.push('smontaggio dell\'impianto esistente');if(V.smaltimento)Li.push('smaltimento dei moduli');
+    if(Li.length)r.push('Lavorazioni incluse: '+Li.join(', ')+'.');
+    if(!V.smaltimento&&INT!=='accumulo'&&INT!=='ampliamento'&&kwp>0)r.push('Smaltimento dei moduli non incluso.');}
+   var na=r.join(' ');$('#fNoteAuto',F).textContent=na;
+   /* i campi di sempre */
+   var q410=!acc&&kwp>0&&m[1]===410,q470=!acc&&kwp>0&&m[1]!==410;
+   chk('fv_imp_q410',q410);chk('fv_imp_q470',q470);chk('fv_batteria',batOn);chk('fv_ottimizzatori',ottOn);chk('fv_staz_auto',V.colonnina);
+   chk('fv_inv_ibrido',invOn&&INVT==='ibrido');chk('fv_inv_tradizionale',invOn&&INVT==='tradizionale');
+   chk('fv_altro_enabled',!!(ta&&ta.value.trim()));
+   val('fv_kwp',kwp?String(kwp):'');val('fv_kwh',kwh?String(kwh):'');val('note',na);
+  }
+
+  /* lettura di una pratica o di un preventivo: dai campi di sempre e dalle note automatiche salvate */
+  window.__fvCarica=function(tipo,d){d=d||{};kwpSalvato=null;kwhSalvato=null;
+   ['s_trifase','s_integrato','s_backup','s_colonnina','s_meter','s_smontaggio','s_smaltimento','sOtt','sBat','sInv'].forEach(function(i){set(i,false);});
+   var vx=$('#fBat',F).querySelector('option[value="-1"]');if(vx)vx.remove();
+   $('#fMod',F).value='0';$('#fNMod',F).value='';$('#fBat',F).value='0';$('#fNBat',F).value='1';$('#fNOtt',F).value='';$('#fNInv',F).value='1';$('#fInv',F).value='0';
+   INVT='ibrido';segOn('sgInv','ibrido');
+   if(tipo==='vuoto'){intervento('nuovo',false);return;}
+   var nota=String(d.note||''),kwp=parseFloat(d.fv_kwp)||0,kwh=parseFloat(d.fv_kwh)||0;
+   /* modulo e quantità */
+   var mi=-1,q=0,mm=nota.match(/si installano (\d+) moduli (.+?) da (\d+) Wp/i);
+   if(mm){q=+mm[1];mi=MOD.findIndex(function(x){return x[0]===mm[2]&&x[1]===+mm[3];});}
+   if(mi<0&&d.fv_pannello)mi=MOD.findIndex(function(x){return x[2]===d.fv_pannello;});
+   if(mi<0&&d.fv_imp_q410)mi=4;
+   if(mi<0&&d.fv_imp_q470)mi=8;
+   if(mi<0&&kwp>0){var pref=[4,8,2,1,0,3,6,7];for(var j=0;j<pref.length;j++){var w=MOD[pref[j]][1],k=kwp*1000/w;if(Math.abs(k-Math.round(k))<0.001){mi=pref[j];break;}}}
+   if(mi<0)mi=4;
+   $('#fMod',F).value=String(mi);
+   if(!q&&kwp>0)q=Math.round(kwp*1000/MOD[mi][1]);
+   if(d.n_moduli_totali)q=+d.n_moduli_totali;
+   $('#fNMod',F).value=q?String(q):'';
+   if(kwp>0&&Math.abs(q*MOD[mi][1]/1000-kwp)>0.0005)kwpSalvato=kwp;   /* non si cambia la potenza salvata senza che lo chieda qualcuno */
+   /* batteria */
+   var batOn=!!(d.fv_batteria||(d.fv_bat_tipo&&d.fv_bat_tipo!=='nessuna')||kwh>0);set('sBat',batOn);
+   if(kwh>0){var bi=-1,nb=1;for(var t=0;t<BAT.length;t++){var r2=kwh/BAT[t][1];if(Math.abs(r2-Math.round(r2))<0.01&&Math.round(r2)>=1){bi=t;nb=Math.round(r2);break;}}
+    var fb=$('#fBat',F),vec=fb.querySelector('option[value="-1"]');if(vec)vec.remove();
+    if(bi<0){fb.add(new Option('Come nella pratica · '+fmt(kwh,2)+' kWh','-1'),0);fb.value='-1';$('#fNBat',F).value='1';kwhSalvato=kwh;}else{fb.value=String(bi);$('#fNBat',F).value=String(nb);}}
+   /* inverter */
+   var ib=!!d.fv_inv_ibrido,tr=!!d.fv_inv_tradizionale;set('sInv',ib||tr);INVT=tr&&!ib?'tradizionale':'ibrido';segOn('sgInv',INVT);
+   set('sOtt',!!d.fv_ottimizzatori);if(d.fv_ottimizzatori)$('#fNOtt',F).value=q?String(q):'';
+   set('s_colonnina',!!d.fv_staz_auto);
+   /* caselle che vivono nelle note */
+   var nl=nota.toLowerCase();
+   set('s_trifase',/trifase/.test(nl)||!!d.fv_trifase);set('s_integrato',/impianto integrato/.test(nl)||!!d.fv_integrato);set('s_backup',/backup/.test(nl)||!!d.fv_backup);
+   set('s_meter',/meter/.test(nl));set('s_smontaggio',/smontaggio/.test(nl));set('s_smaltimento',/smaltimento dei moduli/.test(nl)&&!/smaltimento dei moduli non incluso/.test(nl));
+   var p=String(d.imp_percorso||'').toLowerCase();
+   var it=p==='ampliamento'||p==='rifacimento'||p==='accumulo'?p:(!kwp&&(kwh>0||ib)?'accumulo':(/smontaggio/.test(nl)?'rifacimento':(/meter/.test(nl)?'ampliamento':'nuovo')));
+   intervento(it,false);};
+  window.__fvCarica('vuoto',{});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',via);else via();
+})();
+
+</script>
+</body>
+</html>
