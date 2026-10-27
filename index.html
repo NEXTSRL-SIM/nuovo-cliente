@@ -1043,7 +1043,7 @@ function doSubmit(){
   sgT.innerHTML='<button type="button" data-v="privato" class="on">Privato</button><button type="button" data-v="azienda">Azienda</button>';
   cA.x.insertBefore(sgT,cA.x.firstChild);cA.x.classList.add('px-az');
   var fn=$('#full_name'),fnL=$('label[for="full_name"]');
-  var pAz=el('div','row');pAz.id='azRef';pAz.hidden=true;
+  var pAz=el('div','row');pAz.id='azRef';pAz.style.display='none';
   pAz.innerHTML='<div><label for="az_referente">Referente</label><input id="az_referente" type="text" placeholder="Es. Marco Bianchi" autocomplete="off"><p class="muted">la persona con cui si parla</p></div><div><label for="az_ruolo">Ruolo</label><input id="az_ruolo" type="text" placeholder="Es. Ufficio tecnico" autocomplete="off"></div>';
   if(fn)fn.parentNode.insertBefore(pAz,fn.nextSibling);
   var f=function(id,lab,ph,cls,extra){return '<div><label for="'+id+'">'+lab+'</label><input id="'+id+'" type="text" placeholder="'+(ph||'')+'" autocomplete="off"'+(cls?' class="'+cls+'"':'')+(extra||'')+'><p class="muted" id="'+id+'_h"></p></div>';};
@@ -1074,7 +1074,7 @@ function doSubmit(){
   cLr.b.addEventListener('input',controlla);pAz.addEventListener('input',copiaRef);
   function tipo(v){TIPO=v;var az=v==='azienda';$$('button',sgT).forEach(function(b){b.classList.toggle('on',b.dataset.v===v);});
    if(fnL)fnL.textContent=az?'Ragione sociale *':'Nome e cognome cliente';if(fn)fn.placeholder=az?'Es. SOLARIS IMPIANTI S.R.L.':'Es. ROSSI MARIO';
-   g.classList.toggle('az-pari',az);   pAz.hidden=!az;cAz.c.hidden=!az;cLr.c.hidden=!az;if(opA)opA.hidden=!az;
+   g.classList.toggle('az-pari',az);   pAz.style.display=az?'':'none';cAz.c.hidden=!az;cLr.c.hidden=!az;if(opA)opA.hidden=!az;
    /* privato: a destra Contratto e Sopralluogo come oggi; azienda: a destra i dati dell'azienda, Contratto e Sopralluogo scendono sotto */
    if(az){sposta(sotto,cC.c,cS.c);sotto.hidden=false;}else{sposta(Rr,cC.c,cS.c);sotto.hidden=true;}
    var det=form.querySelector('input[name="tipo_agevolazione"][value="detrazione"]');
