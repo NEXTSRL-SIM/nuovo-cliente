@@ -669,7 +669,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var v=docum
       setCheckbox('fv_inv_ibrido', prev.fv_inv_ibrido);
       setCheckbox('fv_inv_tradizionale', prev.fv_inv_tradizionale);
       setCheckbox('fv_altro_enabled', prev.fv_altro_enabled);
-      setField('fv_altro_desc', prev.fv_altro_desc);
+      /* note del venditore = «Note impianto FV» del preventivo (note_fv), più l'eventuale «Altro» (PORTALE NEXT-110, Sante 29/10) */
+      setField('fv_altro_desc', [prev.note_fv, prev.fv_altro_desc].filter(function(s){ return s && String(s).trim(); }).join('\n'));
       setField('fv_kwp', prev.fv_kwp);
       setField('fv_kwh', prev.fv_kwh);
       setField('fv_totale_eur', prev.fv_totale_eur);
@@ -1246,11 +1247,11 @@ function doSubmit(){
    set('s_colonnina',!!d.fv_staz_auto);
    /* caselle che vivono nelle note */
    var nl=nota.toLowerCase();
-   set('s_trifase',/trifase/.test(nl)||!!d.fv_trifase);set('s_integrato',/impianto integrato/.test(nl)||!!d.fv_integrato);set('s_backup',/backup/.test(nl)||!!d.fv_backup);
+   set('s_trifase',/trifase/.test(nl)||!!d.fv_trifase||d.fv_fornitura==='trifase');set('s_integrato',/impianto integrato/.test(nl)||!!d.fv_integrato);set('s_backup',/backup/.test(nl)||!!d.fv_backup);
    set('s_meter',/meter/.test(nl));set('s_smontaggio',/smontaggio/.test(nl));set('s_smaltimento',/smaltimento dei moduli/.test(nl)&&!/smaltimento dei moduli non incluso/.test(nl));
    var p=String(d.imp_percorso||'').toLowerCase();
    var it=p==='ampliamento'||p==='rifacimento'||p==='accumulo'?p:(!kwp&&(kwh>0||ib)?'accumulo':(/smontaggio/.test(nl)?'rifacimento':(/meter/.test(nl)?'ampliamento':'nuovo')));
-   intervento(it,false);};
+   intervento(it,tipo==='preventivo');};  /* dal preventivo: le spunte dell'intervento si accendono come col clic (meter, smontaggio, smaltimento, accumulo) — PORTALE NEXT-110 */
 
   /* ---------- 3 · provvigione, come la tavola ----------
      I dati e il salvataggio restano quelli di n8n: si legge la pagina provvigioni-form e si salva su salva-provvigione.
