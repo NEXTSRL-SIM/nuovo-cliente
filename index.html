@@ -679,6 +679,25 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var v=docum
       try{window.__fvCarica&&window.__fvCarica('preventivo',prev);}catch(e){console.warn(e)}
     }
 
+    /* Modifica di una pratica: se le note del venditore sono vuote, si prendono dal preventivo dello stesso cliente
+       («Note impianto FV» più l'eventuale «Altro», il più recente che ne ha). Poi si modificano e si salvano qui. PORTALE NEXT-110, Sante 29/10 */
+    var notePrevCache=null;
+    window.__noteDaPreventivo=function(){
+      var nome=String((fullNameInp&&fullNameInp.value)||'').trim().toUpperCase();
+      var ta=form.querySelector('[name="fv_altro_desc"]');
+      if(!nome||!ta||ta.value.trim())return;
+      var trova=function(lista){
+        var c=lista.filter(function(x){return String(x.full_name||'').trim().toUpperCase()===nome&&((x.note_fv&&String(x.note_fv).trim())||(x.fv_altro_desc&&String(x.fv_altro_desc).trim()));})
+          .sort(function(a,b){return String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||''));})[0];
+        if(!c||ta.value.trim())return;
+        ta.value=[c.note_fv,c.fv_altro_desc].filter(function(s){return s&&String(s).trim();}).join('\n');
+        ta.dispatchEvent(new Event('input',{bubbles:true}));
+      };
+      if(preventiviData.length){trova(preventiviData);return;}
+      if(notePrevCache){trova(notePrevCache);return;}
+      fetch(PREVENTIVI_IMPORT_EP).then(function(r){return r.json();}).then(function(d){notePrevCache=Array.isArray(d.items)?d.items:[];trova(notePrevCache);}).catch(function(){});
+    };
+
     /* ===== RESTO DEL FORM (invariato) ===== */
     function checkRetrofit(){
       var isIbrido=fvInvIbrido.checked;
@@ -1251,7 +1270,7 @@ function doSubmit(){
    set('s_meter',/meter/.test(nl));set('s_smontaggio',/smontaggio/.test(nl));set('s_smaltimento',/smaltimento dei moduli/.test(nl)&&!/smaltimento dei moduli non incluso/.test(nl));
    var p=String(d.imp_percorso||'').toLowerCase();
    var it=p==='ampliamento'||p==='rifacimento'||p==='accumulo'?p:(!kwp&&(kwh>0||ib)?'accumulo':(/smontaggio/.test(nl)?'rifacimento':(/meter/.test(nl)?'ampliamento':'nuovo')));
-   intervento(it,tipo==='preventivo');};  /* dal preventivo: le spunte dell'intervento si accendono come col clic (meter, smontaggio, smaltimento, accumulo) — PORTALE NEXT-110 */
+   intervento(it,tipo==='preventivo'||(tipo==='pratica'&&!nota.trim()));if(tipo==='pratica'){try{window.__noteDaPreventivo&&window.__noteDaPreventivo();}catch(e){console.warn(e)}}};  /* dal preventivo: le spunte dell'intervento si accendono come col clic (meter, smontaggio, smaltimento, accumulo) — PORTALE NEXT-110 */
 
   /* ---------- 3 · provvigione, come la tavola ----------
      I dati e il salvataggio restano quelli di n8n: si legge la pagina provvigioni-form e si salva su salva-provvigione.
