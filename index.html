@@ -656,8 +656,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){var v=docum
       setCheckbox('clima_prios70', prev.clima_prios70);
       setCheckbox('clima_dual50', prev.clima_dual50);
       setCheckbox('heat_kit_wifi', prev.heat_kit_wifi);
-      setCheckbox('heat_altro_enabled', prev.heat_altro_enabled);
-      setField('heat_altro_desc', prev.heat_altro_desc);
+      /* note del termico = «Note impianto termico» del preventivo (note_termico, compresa la riga della Mira in deroga), più la descrizione «Altro»: WF5 le porta nell'ordine Odoo (PORTALE NEXT-110, Sante 01/11) */
+      var htx = [prev.note_termico, prev.heat_altro_desc].filter(function(s){ return s && String(s).trim(); }).join('\n');
+      setCheckbox('heat_altro_enabled', prev.heat_altro_enabled || !!htx);
+      setField('heat_altro_desc', htx);
       setField('heat_totale_eur', prev.heat_totale_eur);
 
       /* FOTOVOLTAICO */
