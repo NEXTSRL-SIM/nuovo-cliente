@@ -835,7 +835,10 @@ function switchTab(name){
         try {
           var _qc = new URLSearchParams(window.location.search);
           var _cWanted = _qc.get('client_id');
+          /* leadform-141: il cliente dell'indirizzo si usa solo alla prima apertura, non dopo ogni salvataggio */
+          if (window.__urlClienteUsato) _cWanted = '';
           if (_cWanted) {
+            window.__urlClienteUsato = true;
             existing.value = _cWanted;
             if (existing.value === _cWanted) {
               existing.dispatchEvent(new Event('change'));
@@ -871,9 +874,14 @@ function switchTab(name){
           try {
             var _qp = new URLSearchParams(window.location.search);
             var _prWanted = _qp.get('practice_id');
+            if (window.__urlPraticaUsata) _prWanted = '';
             if (_prWanted) {
+              window.__urlPraticaUsata = true;
               practiceSelect.value = _prWanted;
               if (practiceSelect.value === _prWanted) {
+                /* leadform-141: senza questo la pratica si vedeva ma restava «Nuova opportunita'» e il salvataggio ne creava una nuova */
+                var _rEdit = document.querySelector('input[name="practice_mode"][value="edit_practice"]');
+                if (_rEdit) { _rEdit.checked = true; practiceSelectWrap.style.display = 'block'; }
                 practiceSelect.dispatchEvent(new Event('change'));
               }
             }
