@@ -533,11 +533,48 @@ function avvisa(tipo,titolo,testoHtml){return fApri(tipo,titolo,testoHtml,[['Chi
 function attendi(testo){fApri('attesa',testo||'Un momento…','<span class="gira"></span>'+fEsc(testo||'Sto lavorando…'),[]);}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){var v=document.getElementById('fVelo');if(v&&!v.querySelector('.gira'))v.click();}});
 
+/* 150696 (PORTALE NEXT 2.0-141): elenco clienti e pratiche dalla funzione portale-elenchi, dietro l'accesso personale al portale.
+   Prima la pagina chiamava i webhook n8n client-list (e, in Nuovo cliente, client-practices) senza alcun accesso. Ora manda il gettone del portale
+   (portale_token) nell'intestazione X-Portale-Token. Il gettone si prende come fa Provvigioni: dalla memoria del browser
+   o dal messaggio {tipo:'pass',token} che il portale manda alla pagina quando lei chiede {tipo:'chiedi_pass'}.
+   Solo a un 401 (accesso scaduto o non valido) la pagina toglie il gettone, lo dice a video e chiede al portale di riaprire l'accesso.
+   A un 503 (o a un altro errore del servizio o della rete) il gettone resta e la tendina dice di riprovare. */
+var ELENCHI_EP='https://pnxhthrheqeucoisifjw.supabase.co/functions/v1/portale-elenchi';
+var ORIGINI_NEXT=/^https:\/\/(nextsrl-sim\.github\.io|portale\.next-srl\.net)$/;
+var GETTONE='';try{GETTONE=sessionStorage.getItem('portale_token')||localStorage.getItem('portale_token')||'';}catch(e){}
+var ATTESE_GETTONE=[];
+window.addEventListener('message',function(e){var d=e.data||{};
+ if(d.tipo!=='pass'||!d.token||!ORIGINI_NEXT.test(e.origin)||e.source!==window.parent)return;
+ GETTONE=String(d.token);var a=ATTESE_GETTONE;ATTESE_GETTONE=[];a.forEach(function(f){f(GETTONE);});});
+if(!GETTONE&&window.parent!==window){try{window.parent.postMessage({tipo:'chiedi_pass'},'*');}catch(e){}}
+function attendiGettone(){if(GETTONE)return Promise.resolve(GETTONE);
+ return new Promise(function(ok){ATTESE_GETTONE.push(ok);setTimeout(function(){ok(GETTONE);},3000);});}
+var _accessoAvvisato=false;
+function accessoMancante(stato){
+ if(stato===401){GETTONE='';try{sessionStorage.removeItem('portale_token');localStorage.removeItem('portale_token');}catch(e){}}
+ if(_accessoAvvisato)return;_accessoAvvisato=true;setTimeout(function(){_accessoAvvisato=false;},8000);
+ var nelPortale=window.parent!==window;
+ var tit=stato===403?'Elenco non permesso':(stato===401?'Accesso al portale scaduto':'Serve l\'accesso al portale');
+ var txt=stato===403?'Il tuo utente del portale non può leggere l\'elenco dei clienti. Chiedi a Next.'
+  :(nelPortale?'Per vedere clienti e pratiche serve il tuo accesso personale al portale.<br><br>Se non si apre da sola la finestra per entrare: menu in alto a destra, <b>Esci</b>, poi rientra con la tua mail e la tua password.'
+             :'Apri questa pagina dal portale Next, dopo essere entrato con la tua mail e la tua password.');
+ avvisa('attenzione',tit,txt).then(function(){_accessoAvvisato=false;
+  if(nelPortale&&stato!==403){try{window.parent.postMessage({tipo:'serve_accesso'},'*');}catch(e){}}});}
+var RIPROVA_TXT='Servizio momentaneamente non disponibile, riprova';
+/* tipo: 'clienti' oppure 'pratiche'; par: gli stessi parametri di prima (per le pratiche client_id=...) */
+function elenchi(tipo,par){
+ return attendiGettone().then(function(g){
+  if(!g)return {__accesso:0};
+  return fetch(ELENCHI_EP+'?tipo='+encodeURIComponent(tipo)+(par?'&'+par:''),{headers:{'X-Portale-Token':g},cache:'no-store'})
+   .then(function(r){if(r.status===401||r.status===403)return {__accesso:r.status};
+    if(!r.ok){var es=new Error('portale-elenchi: errore '+r.status);es.riprova=r.status>=500;throw es;}return r.json();},
+    function(x){var en=new Error('portale-elenchi: rete non raggiungibile');en.riprova=true;throw en;});
+ }).then(function(d){if(d&&d.__accesso!==undefined){accessoMancante(d.__accesso);var er=new Error('accesso');er.accesso=d.__accesso;throw er;}return d;});}
+
 </script><script>
   (function(){
     var SUBMIT_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/lead-submit';
-    var CLIENT_LIST_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/client-list';
-    var CLIENT_PRACTICES_EP='https://n8n.srv1030489.hstgr.cloud/webhook/client-practices';
+    /* 150696: client-list e client-practices non si chiamano piu su n8n: si passa da elenchi('clienti'|'pratiche',...) */
     var VENDOR_LIST_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/vendor-list';
     var LIST_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/lead-list';
     var REINVIA_ENDPOINT='https://n8n.srv1030489.hstgr.cloud/webhook/reinvia-mail-cliente';
@@ -776,7 +813,7 @@ function switchTab(name){
     }
 
     function loadClients(){
-      fetch(CLIENT_LIST_ENDPOINT).then(function(res){return res.json()}).then(function(data){
+      elenchi('clienti').then(function(data){
         var clients=Array.isArray(data.clients)?data.clients:(Array.isArray(data)?data:[]);
         existing.innerHTML='<option value="">&#10133; Nuovo cliente</option>';
         clients.forEach(function(c){
@@ -805,14 +842,13 @@ function switchTab(name){
             }
           }
         } catch (e) { /* indirizzo senza parametri: si tira avanti */ }
-      }).catch(function(e){console.warn('Errore clienti:',e)});
+      }).catch(function(e){if(e&&e.accesso!==undefined){existing.innerHTML='<option value="">Elenco clienti chiuso: serve l\'accesso al portale</option>';}else if(e&&e.riprova){existing.innerHTML='<option value="">'+RIPROVA_TXT+'</option>';}console.warn('Errore clienti:',e)});
     }
 
     function loadPractices(clientId){
       clientPractices=[];
       practiceSelect.innerHTML='<option value="">— Seleziona preventivo —</option>';
-      fetch(CLIENT_PRACTICES_EP+'?client_id='+encodeURIComponent(clientId))
-        .then(function(res){return res.json()})
+      elenchi('pratiche','client_id='+encodeURIComponent(clientId))
         .then(function(data){
           var practices=[];
           if(Array.isArray(data)){practices=data.map(function(r){return r.practices||r}).filter(Boolean);}
@@ -842,7 +878,7 @@ function switchTab(name){
               }
             }
           } catch (e) { /* indirizzo senza parametri: si tira avanti */ }
-        }).catch(function(e){console.warn('Errore pratiche:',e)});
+        }).catch(function(e){if(e&&e.accesso!==undefined){practiceSelect.innerHTML='<option value="">Pratiche non leggibili: serve l\'accesso al portale</option>';}else if(e&&e.riprova){practiceSelect.innerHTML='<option value="">'+RIPROVA_TXT+'</option>';}console.warn('Errore pratiche:',e)});
     }
 
     function setCheckbox(name,val){var cb=form.querySelector('[name="'+name+'"]');if(cb)cb.checked=!!val;}
