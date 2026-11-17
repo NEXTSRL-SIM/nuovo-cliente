@@ -627,8 +627,7 @@ function elenchi(tipo,par){
 
     function loadPreventiviImport() {
       importStatus.textContent = 'Caricamento preventivi...';
-      fetch(PREVENTIVI_IMPORT_EP)
-        .then(function(r){ return r.json(); })
+      elenchi('import')
         .then(function(d){
           preventiviData = Array.isArray(d.items) ? d.items : [];
           importPrevSel.innerHTML = '<option value="">— Seleziona preventivo —</option>';
@@ -734,7 +733,7 @@ function elenchi(tipo,par){
       };
       if(preventiviData.length){trova(preventiviData);return;}
       if(notePrevCache){trova(notePrevCache);return;}
-      fetch(PREVENTIVI_IMPORT_EP).then(function(r){return r.json();}).then(function(d){notePrevCache=Array.isArray(d.items)?d.items:[];trova(notePrevCache);}).catch(function(){});
+      elenchi('import').then(function(d){notePrevCache=Array.isArray(d.items)?d.items:[];trova(notePrevCache);}).catch(function(){});
     };
 
     /* ===== RESTO DEL FORM (invariato) ===== */
@@ -804,7 +803,8 @@ function switchTab(name){
     document.getElementById('tabBtnProvv').style.display='block';
   }
 });
-    function loadVendors(){
+    function loadVendors(){elenchi('venditori').then(function(a){if(a&&a.bloccato&&Array.isArray(a.vendors)&&a.vendors.length){var n=a.vendors[0].name;vendorSel.innerHTML='';var o=document.createElement('option');o.value=n;o.textContent=n;vendorSel.appendChild(o);vendorSel.value=n;window.__venditoreFisso=n;return;}loadVendorsTutti();}).catch(function(e){if(!e||!e.accesso)loadVendorsTutti();});}
+    function loadVendorsTutti(){
       fetch(VENDOR_LIST_ENDPOINT).then(function(res){return res.json()}).then(function(data){
         var vendors=Array.isArray(data.vendors)?data.vendors:[];
         vendorSel.innerHTML='<option value="">Seleziona venditore...</option>';
@@ -954,7 +954,7 @@ function switchTab(name){
       practiceBox.style.display='none';
       fullNameInp.readOnly=false;emailInp.readOnly=false;phoneInp.readOnly=false;
       fullNameInp.value='';emailInp.value='';phoneInp.value='';
-      vendorSel.value='';clearProducts();
+      vendorSel.value=window.__venditoreFisso||'';clearProducts();
       statusEl.textContent='';statusEl.classList.remove('error','success');
       reinviaBox.style.display='none';reinviaStatus.textContent='';
       document.getElementById('cb_import_prev').checked=false;
