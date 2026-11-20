@@ -1346,24 +1346,54 @@ function doSubmit(){
    +'<section class="pc pdich"><div class="ph"><span class="pi vi">'+ico('ag')+'</span><div><b>Dichiarazione agente</b><small>Quello che ha dichiarato '+fEsc(d.an||'l\'agente')+'</small></div><span class="px"><span class="chipx">'+fEsc(d.stato||'bozza')+'</span></span></div><div class="pb">'
    +'<div class="sl">Dichiarato</div><div class="k2"><label class="kb">Provvigione base (€)<input type="number" id="pB" step="0.01" min="0" value="'+d.b.toFixed(2)+'"></label><label class="kb">Quota plusvalenza (€)<input type="number" id="pP" step="0.01" min="0" value="'+d.p.toFixed(2)+'"></label></div>'
    +'<div class="ptot"><span>Totale dichiarato</span><b id="pTot"></b></div><div class="pdiff"><span>Differenza dal calcolo</span><b id="pDiff"></b></div>'
-   +'<div class="sl">Nota dell\'agente</div><textarea id="pNota" rows="3" placeholder="Facoltativa">'+fEsc(d.nota)+'</textarea></div>'
+   +'<div class="sl">Nota dell\'agente</div><textarea id="pNota" rows="3" placeholder="Facoltativa; obbligatoria per una nuova proposta dopo la decisione di Next">'+fEsc(d.nota)+'</textarea></div>'
    +'<div class="pf"><span id="pMsg" class="fh"></span><button type="button" class="btn btn-secondary" id="pBozza" style="margin-left:auto">Salva bozza</button><button type="button" class="btn btn-primary" id="pConf">Conferma provvigione</button></div></section></div>'
-   +'<section class="pc pdec" style="margin-top:16px"><div class="ph"><span class="pi">'+ico('eur')+'</span><div><b>Decisione Next</b><small>Qui decidi tu: accetti la dichiarazione o la correggi. Ogni passaggio resta scritto qui sotto.</small></div><span class="px"><span class="chipx amb">da decidere</span></span></div>'
+   +'<section class="pc pdec" style="margin-top:16px"><div class="ph"><span class="pi">'+ico('eur')+'</span><div><b>Decisione Next</b><small>Qui decidi tu: accetti la dichiarazione o la correggi. Ogni passaggio resta scritto qui sotto.</small></div><span class="px"><span class="chipx amb" id="dChip">da decidere</span></span></div>'
    +'<div class="pb dec-g"><div class="dec-sx"><div class="fr" style="border:0"><span>Esito</span><span class="sg" id="dEsito"><button type="button" data-v="accetto" class="on">Accetto la dichiarazione</button><button type="button" data-v="modifico">Modifico</button></span></div>'
    +'<div class="dec-3"><label class="kb">Base approvata (€)<input type="number" id="dB" step="0.01" min="0" value="'+d.b.toFixed(2)+'"></label><label class="kb">Plusvalenza approvata (€)<input type="number" id="dP" step="0.01" min="0" value="'+d.p.toFixed(2)+'"></label><div class="dec-tot"><span>Totale approvato</span><b id="dTot"></b></div></div>'
    +'<label class="dec-mot" id="dMotW"><span>Motivo della modifica <i>*</i></span><textarea id="dMot" rows="3" placeholder="Perché correggi la cifra dichiarata"></textarea><span class="fh">Obbligatorio quando modifichi: va all\'agente insieme alla cifra.</span></label></div>'
-   +'<div><div class="sl" style="margin-top:0">Storia di questa provvigione</div><div class="dec-st">'
-   +'<div class="st"><i style="background:var(--text-muted)"></i><div><b>Calcolo del sistema · '+eur(d.xb+d.xp)+'</b><span>base '+d.pb+'% · plusvalenza '+d.pp+'%</span></div></div>'
-   +(d.stato?'<div class="st"><i style="background:var(--vi2)"></i><div><b>'+fEsc((d.an||'Agente').split(' ')[0])+' dichiara '+eur(d.b+d.p)+'</b><span>'+(Math.abs(d.b+d.p-d.xb-d.xp)>0.5?((d.b+d.p-d.xb-d.xp>0?'+ ':'− ')+eur(Math.abs(d.b+d.p-d.xb-d.xp))+' rispetto al calcolo'):'come il calcolo')+' · '+fEsc(d.stato)+'</span></div></div>':'<div class="st"><i class="vuoto"></i><div><b>Dichiarazione dell\'agente</b><span>non ancora fatta</span></div></div>')
+   +'<div><div class="sl" style="margin-top:0">Storia di questa provvigione</div><div class="dec-st" id="dStoria">'
+   +'<div class="st"><i style="background:var(--text-muted)"></i><div><b>Carico la storia…</b><span></span></div></div>'
    +'<div class="st"><i style="background:var(--accent)"></i><div><b id="dStNext">Decisione Next</b><span id="dStNextS">in corso</span></div></div>'
-   +'<div class="st"><i class="vuoto"></i><div><b>'+fEsc((d.an||'L\'agente').split(' ')[0])+' accetta</b><span>dal collegamento nella mail, oppure risponde e si riapre</span></div></div>'
    +'</div></div></div>'
-   +'<div class="pf"><span class="fh">Approvata e accettata, entra nel resoconto mensile del venditore e nell\'ordine di acquisto in Odoo.</span><button type="button" class="btn btn-secondary" disabled title="Si collega nel prossimo passo" style="margin-left:auto">Salva bozza</button><button type="button" class="btn btn-primary" disabled title="Si collega nel prossimo passo">Approva e manda all\'agente</button></div></section>';
-   /* Decisione Next: per ora solo la grafica approvata (non salva niente) */
+   +'<div class="pf"><span class="fh">Approvata e accettata, entra nel resoconto mensile del venditore e nell\'ordine di acquisto in Odoo.</span><span id="dMsg" class="fh" style="margin-left:12px;color:var(--text-muted)"></span><button type="button" class="btn btn-secondary" id="dBozza" style="margin-left:auto">Salva bozza</button><button type="button" class="btn btn-primary" id="dManda">Approva e manda all\'agente</button></div></section>';
+   /* Decisione Next collegata (PORTALE NEXT 2.0-145, 20/11): storia vera, decisione salvata, mail all'agente (edge provvigioni-decisione) */
+   var DEC='https://pnxhthrheqeucoisifjw.supabase.co/functions/v1/provvigioni-decisione',QD=null;
+   function dData(s){try{return new Date(s).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+   function dRiga(col,tit,sot){return '<div class="st"><i '+(col?'style="background:'+col+'"':'class="vuoto"')+'></i><div><b>'+tit+'</b><span>'+(sot||'')+'</span></div></div>';}
+   function dDisegna(q){if(q)QD=q;q=QD;var box=$('#dStoria',PV);if(!box)return;var ag=fEsc((d.an||'Agente').split(' ')[0]),h='';
+    if(!q||!q.esiste){h=dRiga('var(--text-muted)','Calcolo del sistema · '+eur(d.xb+d.xp),'base '+d.pb+'% · plusvalenza '+d.pp+'%')+dRiga('',"Dichiarazione dell'agente",'non ancora fatta');}
+    else (q.storia||[]).forEach(function(s){var t=Number(s.base||0)+Number(s.plus||0),w=dData(s.quando),n=s.nota?fEsc(s.nota):'',c=fEsc(s.chi||'');
+     if(s.evento==='calcolo')h+=dRiga('var(--text-muted)','Calcolo del sistema · '+eur(t),w);
+     else if(s.evento==='dichiarazione')h+=dRiga('var(--vi2)',c+' dichiara '+eur(t),w+(n?' · '+n:''));
+     else if(s.evento==='nuova_proposta')h+=dRiga('var(--am2)',c+' fa una nuova proposta · '+eur(t),w+(n?' · '+n:''));
+     else if(s.evento==='decisione')h+=dRiga('var(--accent)',c+(/^modifica/.test(s.nota||'')?' modifica a ':' accetta ')+eur(t),w+(n?' · '+n:''));
+     else if(s.evento==='bozza_next')h+=dRiga('var(--accent)','Bozza di Next · '+eur(t),w+(n?' · '+n:''));
+     else if(s.evento==='mail_agente')h+=dRiga('var(--text-muted)',"Mail all'agente",w+(n?' · '+n:''));
+     else if(s.evento==='accettata')h+=dRiga('#16a34a',c+' accetta · '+eur(t),w+(n?' · '+n:''));});
+    var sn=q&&q.stato_next,att=!q||!q.esiste||q.stato_agente!=='confermata';
+    if(!sn||sn==='da_decidere'||sn==='bozza_next')h+='<div class="st"><i style="background:var(--accent)"></i><div><b id="dStNext">Decisione Next</b><span id="dStNextS">'+(att?"in attesa che l'agente confermi la dichiarazione":'in corso')+'</span></div></div>'+dRiga('',ag+' accetta','dal collegamento nella mail, oppure fa una nuova proposta');
+    else if(sn==='approvata')h+=dRiga('',ag+' accetta','in attesa: ha ricevuto la mail con il collegamento');
+    box.innerHTML=h;
+    var ch=$('#dChip',PV);if(ch)ch.textContent={da_decidere:'da decidere',bozza_next:'bozza di Next',approvata:"in attesa dell'agente",accettata:'accettata'}[sn]||'da decidere';
+    if(q&&q.esiste&&sn==='bozza_next'&&q.base_approvata!=null){var mm=q.decisione==='modifico';[].forEach.call($('#dEsito',PV).children,function(x){x.classList.toggle('on',x.dataset.v===(mm?'modifico':'accetto'));});if(mm){$('#dB',PV).value=Number(q.base_approvata).toFixed(2);$('#dP',PV).value=Number(q.plus_approvata).toFixed(2);$('#dMot',PV).value=q.motivo||'';}}
+    var no=!(q&&q.puo_decidere)||att||sn==='approvata'||sn==='accettata';$('#dBozza',PV).disabled=$('#dManda',PV).disabled=no;
+    $('#dMsg',PV).textContent=!(q&&q.puo_decidere)?'La decisione la prende Sante.':att?"Prima l'agente deve confermare la dichiarazione.":sn==='approvata'?"Decisa: aspettiamo l'accettazione dell'agente.":sn==='accettata'?"Accettata dall'agente.":'';
+    dRic();}
+   function dCarica(){attendiGettone().then(function(g){return fetch(DEC+'?pid='+encodeURIComponent(d.pid)+'&aid='+encodeURIComponent(d.aid),{headers:{'X-Portale-Token':g},cache:'no-store'});}).then(function(r){return r.json();}).then(function(q){if(q&&q.ok===false){$('#dMsg',PV).textContent=q.errore||'Storia non caricata';return;}dDisegna(q);}).catch(function(e){$('#dMsg',PV).textContent='Storia non caricata: '+(e.message||e);});}
+   async function dInvia(manda){var m=$('#dEsito .on',PV).dataset.v,b=parseFloat($('#dB',PV).value)||0,p=parseFloat($('#dP',PV).value)||0,mo=($('#dMot',PV).value||'').trim();
+    if(m==='modifico'&&!mo){avvisa('errore','Motivo mancante',"Quando modifichi la cifra il motivo è obbligatorio: va all'agente.");return;}
+    if(manda&&!(await chiedi("Approva e manda all'agente",(m==='modifico'?'Approvo modificata a ':'Accetto ')+'<b>'+eur(b+p)+"</b> e mando la mail all'agente con il collegamento per accettare?",'Approva e manda')))return;
+    $('#dMsg',PV).textContent='Salvo…';$('#dBozza',PV).disabled=$('#dManda',PV).disabled=true;
+    attendiGettone().then(function(g){return fetch(DEC,{method:'POST',headers:{'Content-Type':'application/json','X-Portale-Token':g},body:JSON.stringify({azione:'decidi',pid:d.pid,aid:d.aid,esito:m,base:b,plus:p,motivo:mo||null,manda:manda})});}).then(function(r){return r.json();}).then(function(q){
+     if(!q||q.ok===false){$('#dMsg',PV).textContent='';avvisa('errore','Decisione non salvata',fEsc((q&&q.errore)||'errore'));dDisegna(null);return;}
+     dDisegna(q);avvisa('ok',manda?'Decisione mandata':'Bozza salvata',manda?('Mail '+fEsc(q.mail||'')):"La decisione è salvata in bozza: l'agente non vede ancora niente.");})
+    .catch(function(e){$('#dMsg',PV).textContent='';avvisa('errore','Decisione non salvata',fEsc(e.message||e));dDisegna(null);});}
+   setTimeout(function(){var b1=$('#dBozza',PV),b2=$('#dManda',PV);if(b1)b1.onclick=function(){dInvia(false);};if(b2)b2.onclick=function(){dInvia(true);};dCarica();},0);
    function dRic(){var m=$('#dEsito .on',PV).dataset.v==='modifico',b=parseFloat($('#dB',PV).value)||0,p=parseFloat($('#dP',PV).value)||0;
     if(!m){$('#dB',PV).value=(parseFloat($('#pB',PV).value)||0).toFixed(2);$('#dP',PV).value=(parseFloat($('#pP',PV).value)||0).toFixed(2);b=parseFloat($('#dB',PV).value);p=parseFloat($('#dP',PV).value);}
     $('#dB',PV).disabled=$('#dP',PV).disabled=!m;$('#dMotW',PV).style.display=m?'':'none';$('#dTot',PV).textContent=eur(b+p);
-    $('#dStNext',PV).textContent=(m?'Sante modifica a ':'Sante accetta ')+eur(b+p);$('#dStNextS',PV).textContent=m?'con motivo · parte la mail all\'agente':'parte la mail all\'agente';}
+    if($('#dStNext',PV))$('#dStNext',PV).textContent=(m?'Sante modifica a ':'Sante accetta ')+eur(b+p);if($('#dStNextS',PV))$('#dStNextS',PV).textContent=m?'con motivo · parte la mail all\'agente':'parte la mail all\'agente';}
    setTimeout(function(){var sgE=$('#dEsito',PV);if(!sgE)return;sgE.addEventListener('click',function(e){var bt=e.target.closest('button');if(!bt)return;[].forEach.call(sgE.children,function(x){x.classList.toggle('on',x===bt);});dRic();});
     ['dB','dP'].forEach(function(i){$('#'+i,PV).addEventListener('input',dRic);});['pB','pP'].forEach(function(i){$('#'+i,PV).addEventListener('input',dRic);});dRic();},0);
    function ricalc(){var b=parseFloat($('#pB',PV).value)||0,p=parseFloat($('#pP',PV).value)||0,df=b+p-(d.xb+d.xp);
@@ -1371,9 +1401,10 @@ function doSubmit(){
     $('#pDisc',PV).style.display=df>0.5?'flex':'none';$('#pDiscT',PV).textContent='L\'agente dichiara '+eur(df)+' in più del calcolo di sistema.';}
    ['pB','pP'].forEach(function(i){$('#'+i,PV).addEventListener('input',ricalc);});ricalc();
    function salvaP(stato){var b=parseFloat($('#pB',PV).value)||0,p=parseFloat($('#pP',PV).value)||0;
+    var nt=($('#pNota',PV).value||'').trim();if(QD&&QD.esiste&&/approvata|accettata|bozza_next/.test(QD.stato_next)&&(Math.abs(b-Number(QD.base_dichiarata))>0.004||Math.abs(p-Number(QD.plus_dichiarata))>0.004)&&(!nt||nt===(QD.nota_agente||''))){avvisa('errore','Nuova proposta',"Next ha già deciso questa provvigione: per una nuova proposta scrivi nella nota la motivazione. La proposta torna a Next.");return;}
     var pay={pratica_id:d.pid,agente_id:d.aid,agente_nome:d.an,totale_contratto_eur:d.t,listino_fv_eur:d.lf,listino_heat_eur:d.lh,percentuale_base:d.pb,percentuale_plusvalenza:d.pp,prov_base_dichiarata:b,prov_plus_dichiarata:p,note_agente:$('#pNota',PV).value||null,stato:stato};
     $('#pMsg',PV).textContent='Salvo…';
-    fetch(WHP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pay)}).then(function(r){return r.json();}).then(function(res){
+    fetch(WHP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pay)}).then(function(r){return r.text().then(function(t){var j={};try{j=JSON.parse(t);}catch(e){}if(!r.ok)throw new Error(/motivazione/i.test(t)?'Nuova proposta: scrivi nella nota la motivazione della modifica.':(j.message||'errore '+r.status));return j;});}).then(function(res){dCarica();
      $('#pMsg',PV).textContent='';avvisa(res.alert_discrepanza?'attenzione':'ok',stato==='confermata'?'Provvigione confermata':'Salvata in bozza',res.alert_discrepanza?'La dichiarazione supera il calcolo di sistema: la discrepanza è segnalata a Sante.':'Salvata.');
      d.stato=stato==='confermata'?'Confermata':'Bozza';var ch=$('.pdich .chipx',PV);if(ch)ch.textContent=d.stato;})
     .catch(function(e){$('#pMsg',PV).textContent='';avvisa('errore','Provvigione non salvata',fEsc(e.message||e));});}
